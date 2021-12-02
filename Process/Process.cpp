@@ -1,7 +1,3 @@
-// TODO: 파일 이름, 클래스 이름 Process로 변경.
-// TODO: 맨 아래 함수들 정리
-
-
 #pragma region 프로세스 킬 할 때 참조
 //PID에서 HWND를 얻거나
 //HANDLE에서 HWND를 얻거나
