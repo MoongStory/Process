@@ -49,7 +49,7 @@ BOOL Moong_Process::Process::IsExistProcess(std::string strProcessName)
 		{
 			CloseHandle(hProcessSnap);
 
-			return 0;
+			return EXIT_SUCCESS;
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
 
@@ -121,7 +121,7 @@ int Moong_Process::Process::TerminateProcessNormal(const std::vector<std::string
 
 	CloseHandle(hProcessSnap);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
@@ -184,7 +184,7 @@ int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const std::
 		return SendTerminateMessageToProcessWithSamePID(hWndListNextDept, pid);
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int Moong_Process::Process::TerminateProcess(const std::vector<std::string>& processNameList)
@@ -245,7 +245,7 @@ int Moong_Process::Process::TerminateProcess(const std::vector<std::string>& pro
 
 	CloseHandle(hProcessSnap);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int Moong_Process::Process::TerminateProcess(const char* const file_name)
