@@ -277,7 +277,7 @@ BOOL Moong_Process::Process::TerminateProcess(HWND hwnd)
 
 	if (hGetFromPID)
 	{
-		// TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
+		//TODO: TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
 		::TerminateProcess(hGetFromPID, 0); // TerminateProcess 예외처리 생략
 
 		CloseHandle(hGetFromPID);
