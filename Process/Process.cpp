@@ -1,5 +1,3 @@
-//TODO: return (숫자) enum 추가해서 명시적으로 수정.
-
 #pragma region 프로세스 킬 할 때 참조
 //PID에서 HWND를 얻거나
 //HANDLE에서 HWND를 얻거나

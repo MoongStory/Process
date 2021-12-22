@@ -8,6 +8,8 @@
 
 namespace Moong_Process
 {
+	//TODO: return (숫자) enum 추가해서 명시적으로 수정.
+
 	class Process
 	{
 	public:
