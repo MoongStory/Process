@@ -17,6 +17,8 @@ namespace Moong_Process
 		int TerminateProcessNormal(const std::string& processName);
 		int TerminateProcessNormal(const std::vector<std::string>& processNameList);
 		int TerminateProcess(const std::vector<std::string>& processNameList);
+		// TODO: 파라미터 CStringA로 변경.
+		//		char*, std::string 하나로 통합
 		int TerminateProcess(const char* const file_name);
 		int TerminateProcess(const std::string file_name);
 		BOOL TerminateProcess(HWND hwnd);
