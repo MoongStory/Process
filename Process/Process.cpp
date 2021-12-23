@@ -216,7 +216,7 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_nam
 
 			if (hGetFromPID)
 			{
-				// TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
+				// FIXME: TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
 				::TerminateProcess(hGetFromPID, 0); // TerminateProcess 예외처리 생략
 
 				CloseHandle(hGetFromPID);
@@ -255,7 +255,7 @@ BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd)
 
 	if (hGetFromPID)
 	{
-		//TODO: TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
+		// FIXME: TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
 		::TerminateProcess(hGetFromPID, 0); // TerminateProcess 예외처리 생략
 
 		CloseHandle(hGetFromPID);
