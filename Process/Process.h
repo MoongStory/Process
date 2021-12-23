@@ -1,29 +1,47 @@
 // https://github.com/MoongStory/Process
 
+#if _MSC_VER > 1000
 #pragma once
+#endif
+
+#ifndef _PROCESS_H_
+#define _PROCESS_H_
 
 #include <iostream>
+#include <atlstr.h>
 #include <vector>
 #include <Windows.h>
 
-namespace Moong_Process
+namespace MOONG
 {
-	// TODO: return (숫자) enum 추가해서 명시적으로 수정.
-
-	class Process
+	namespace PROCESS
 	{
-	public:
-		int IsExistProcess(std::string strProcessName);
-		int TerminateProcessNormal(const std::string& processName);
-		int TerminateProcessNormal(const std::vector<std::string>& processNameList);
-		int TerminateProcess(const std::vector<std::string>& processNameList);
-		// TODO: 파라미터 CStringA로 변경.
-		//		char*, std::string 하나로 통합
-		int TerminateProcess(const char* const file_name);
-		int TerminateProcess(const std::string file_name);
-		BOOL TerminateProcess(HWND hwnd);
-	private:
-		int SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid);
-		int SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid);
-	};
+		// TODO: return (숫자) enum 추가해서 명시적으로 수정.
+		namespace RETURN_CODE
+		{
+			enum RETURN_CODE
+			{
+				FIND_PROCESS = 0,
+				CAN_NOT_FIND_PROCESS = 1,
+				ERROR_CREATE_TOOLHELP32_SNAPSHOT = 2,
+				ERROR_PROCESS32_FIRST = 3
+			};
+		}
+
+		class Process
+		{
+		public:
+			int IsExistProcess(CStringA process_name);
+			int TerminateProcessNormal(CStringA process_name);
+			int TerminateProcessNormal(std::vector<CStringA>& process_name_list);
+			int TerminateProcess(std::vector<CStringA>& process_name_list);
+			int TerminateProcess(CStringA file_name);
+			BOOL TerminateProcess(HWND hwnd);
+		private:
+			int SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid);
+			int SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid);
+		};
+	}
 }
+
+#endif _PROCESS_H_

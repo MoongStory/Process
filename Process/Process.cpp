@@ -1,10 +1,11 @@
 #pragma region 프로세스 킬 할 때 참조
-//PID에서 HWND를 얻거나
-//HANDLE에서 HWND를 얻거나
-//(HANDLE hGetFromPID = OpenProcess(MAXIMUM_ALLOWED, FALSE, pe32.th32ProcessID)
+// TODO: 윈도우 일일이 찾는 방법에서 수정...
+//		PID에서 HWND를 얻거나
+//		HANDLE에서 HWND를 얻거나
+//		(HANDLE hGetFromPID = OpenProcess(MAXIMUM_ALLOWED, FALSE, pe32.th32ProcessID)
 //
-//EnumWindows()
-//https://stackoverflow.com/questions/11711417/get-hwnd-by-process-id-c
+//		EnumWindows()
+//		https://stackoverflow.com/questions/11711417/get-hwnd-by-process-id-c
 #pragma endregion 프로세스 킬 할 때 참조
 
 
@@ -14,13 +15,13 @@
 #include <tchar.h>
 #include <algorithm>
 
-BOOL Moong_Process::Process::IsExistProcess(std::string strProcessName)
+BOOL MOONG::PROCESS::Process::IsExistProcess(CStringA process_name)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return 2;
+		return MOONG::PROCESS::RETURN_CODE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -31,45 +32,41 @@ BOOL Moong_Process::Process::IsExistProcess(std::string strProcessName)
 	{
 		CloseHandle(hProcessSnap);
 
-		return 3;
+		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
 	}
 
 	do {
+		CStringA exe_file(pe32.szExeFile);
 
-		std::wstring ws(pe32.szExeFile);
-
-		// https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
-		std::string szExeFile(ws.begin(), ws.end());	// FIXME: 여기서 warning 발생.
-
-		if (_stricmp(strProcessName.c_str(), szExeFile.c_str()) == 0)
+		if(process_name.CompareNoCase(exe_file) == 0)
 		{
 			CloseHandle(hProcessSnap);
 
-			return EXIT_SUCCESS;
+			return MOONG::PROCESS::RETURN_CODE::FIND_PROCESS;
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
 
 	CloseHandle(hProcessSnap);
 
-	return 1;
+	return MOONG::PROCESS::RETURN_CODE::CAN_NOT_FIND_PROCESS;
 }
 
-int Moong_Process::Process::TerminateProcessNormal(const std::string& processName)
+int MOONG::PROCESS::Process::TerminateProcessNormal(CStringA process_name)
 {
-	std::vector<std::string> processNameList;
+	std::vector<CStringA> process_name_list;
 	
-	processNameList.push_back(processName);
+	process_name_list.push_back(process_name);
 
-	return this->TerminateProcessNormal(processNameList);
+	return this->TerminateProcessNormal(process_name_list);
 }
 
-int Moong_Process::Process::TerminateProcessNormal(const std::vector<std::string>& processNameList)
+int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return 1;
+		return MOONG::PROCESS::RETURN_CODE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -79,20 +76,17 @@ int Moong_Process::Process::TerminateProcessNormal(const std::vector<std::string
 	{
 		CloseHandle(hProcessSnap);
 
-		return 2;
+		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
 	}
 
 	bool is_process_name_same = false;
 
 	do {
-		for (size_t i = 0; i < processNameList.size(); i++)
+		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			std::wstring ws(pe32.szExeFile);
+			CStringA exe_file(pe32.szExeFile);
 
-			// https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
-			std::string szExeFile(ws.begin(), ws.end());	// FIXME: 여기서 warning 발생.
-
-			if (_stricmp(processNameList[i].c_str(), szExeFile.c_str()) == 0)
+			if(process_name_list[i].CompareNoCase(exe_file) == 0)
 			{
 				is_process_name_same = true;
 
@@ -103,8 +97,6 @@ int Moong_Process::Process::TerminateProcessNormal(const std::vector<std::string
 		if (is_process_name_same)
 		{
 			is_process_name_same = false;
-
-			//_tprintf(TEXT("TerminateProcessNormal(), ExeFile[%s], ProcessID[%d]\n"), pe32.szExeFile, pe32.th32ProcessID);
 
 			// TODO: ProcessID를 바로 HWND로 변경하는 방법 찾아보기.
 			this->SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
@@ -120,7 +112,7 @@ int Moong_Process::Process::TerminateProcessNormal(const std::vector<std::string
 	return EXIT_SUCCESS;
 }
 
-int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
+int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
 {
 	std::vector<HWND> startHWND;
 
@@ -129,7 +121,7 @@ int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const HWND 
 	return this->SendTerminateMessageToProcessWithSamePID(startHWND, pid);
 }
 
-int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
+int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
 {
 	HWND hWnd = NULL;
 	TCHAR szCaption[1025] = { 0 };
@@ -149,8 +141,6 @@ int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const std::
 			{
 				if (dwProcId == pid)
 				{
-					//_tprintf(TEXT("SendTerminateMessageToProcessWithSamePID(), dwProcId[%d], hWnd[%p], szCaption[%s]\n"), dwProcId, hWnd, szCaption);
-
 					// 프로세스 종료 시 WM_CLOSE, WM_DESTROY, WM_QUIT 메시지가 순서대로 발생한다.
 					PostMessage(hWnd, WM_CLOSE, NULL, NULL);
 					PostMessage(hWnd, WM_DESTROY, NULL, NULL);
@@ -183,13 +173,13 @@ int Moong_Process::Process::SendTerminateMessageToProcessWithSamePID(const std::
 	return EXIT_SUCCESS;
 }
 
-int Moong_Process::Process::TerminateProcess(const std::vector<std::string>& processNameList)
+int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return 1;
+		return MOONG::PROCESS::RETURN_CODE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -200,20 +190,17 @@ int Moong_Process::Process::TerminateProcess(const std::vector<std::string>& pro
 	{
 		CloseHandle(hProcessSnap);
 
-		return 2;
+		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
 	}
 
 	bool is_process_name_same = false;
 
 	do {
-		for (size_t i = 0; i < processNameList.size(); i++)
+		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			std::wstring ws(pe32.szExeFile);
+			CStringA exe_file(pe32.szExeFile);
 
-			// https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
-			std::string szExeFile(ws.begin(), ws.end());	// FIXME: 여기서 warning 발생.
-
-			if (_stricmp(processNameList[i].c_str(), szExeFile.c_str()) == 0)
+			if(process_name_list[i].CompareNoCase(exe_file) == 0)
 			{
 				is_process_name_same = true;
 
@@ -244,23 +231,16 @@ int Moong_Process::Process::TerminateProcess(const std::vector<std::string>& pro
 	return EXIT_SUCCESS;
 }
 
-int Moong_Process::Process::TerminateProcess(const char* const file_name)
+int MOONG::PROCESS::Process::TerminateProcess(CStringA file_name)
 {
-	std::string temp_file_name = file_name;
+	std::vector<CStringA> process_name_list;
 
-	return this->TerminateProcess(temp_file_name);
+	process_name_list.push_back(file_name);
+
+	return this->TerminateProcess(process_name_list);
 }
 
-int Moong_Process::Process::TerminateProcess(const std::string file_name)
-{
-	std::vector<std::string> processNameList;
-
-	processNameList.push_back(file_name);
-
-	return this->TerminateProcess(processNameList);
-}
-
-BOOL Moong_Process::Process::TerminateProcess(HWND hwnd)
+BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
