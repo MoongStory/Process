@@ -15,7 +15,7 @@
 #include <tchar.h>
 #include <algorithm>
 
-BOOL MOONG::PROCESS::Process::IsExistProcess(CStringA process_name)
+BOOL MOONG::PROCESS::Process::IsExistProcess(CStringA process_name) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -51,7 +51,7 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(CStringA process_name)
 	return MOONG::PROCESS::RETURN_CODE::CAN_NOT_FIND_PROCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(CStringA process_name)
+int MOONG::PROCESS::Process::TerminateProcessNormal(CStringA process_name) const
 {
 	std::vector<CStringA> process_name_list;
 	
@@ -60,7 +60,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(CStringA process_name)
 	return this->TerminateProcessNormal(process_name_list);
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& process_name_list)
+int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& process_name_list) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -112,7 +112,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& proce
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
+int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid) const
 {
 	std::vector<HWND> startHWND;
 
@@ -121,7 +121,7 @@ int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND
 	return this->SendTerminateMessageToProcessWithSamePID(startHWND, pid);
 }
 
-int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
+int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid) const
 {
 	HWND hWnd = NULL;
 	TCHAR szCaption[1025] = { 0 };
@@ -173,7 +173,7 @@ int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std:
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_name_list)
+int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_name_list) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -231,7 +231,7 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_nam
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(CStringA file_name)
+int MOONG::PROCESS::Process::TerminateProcess(CStringA file_name) const
 {
 	std::vector<CStringA> process_name_list;
 
@@ -240,7 +240,7 @@ int MOONG::PROCESS::Process::TerminateProcess(CStringA file_name)
 	return this->TerminateProcess(process_name_list);
 }
 
-BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd)
+BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd) const
 {
 	if (hwnd == NULL)
 	{
