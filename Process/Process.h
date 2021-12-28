@@ -31,11 +31,11 @@ namespace MOONG
 		class Process
 		{
 		public:
-			int IsExistProcess(CStringA process_name) const;
-			int TerminateProcessNormal(CStringA process_name) const;
+			int IsExistProcess(const CStringA process_name) const;
+			int TerminateProcessNormal(const CStringA process_name) const;
 			int TerminateProcessNormal(std::vector<CStringA>& process_name_list) const;
 			int TerminateProcess(std::vector<CStringA>& process_name_list) const;
-			int TerminateProcess(CStringA file_name) const;
+			int TerminateProcess(const CStringA file_name) const;
 			BOOL TerminateProcess(HWND hwnd) const;
 		private:
 			int SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid) const;

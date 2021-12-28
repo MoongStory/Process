@@ -15,7 +15,7 @@
 #include <tchar.h>
 #include <algorithm>
 
-BOOL MOONG::PROCESS::Process::IsExistProcess(CStringA process_name) const
+BOOL MOONG::PROCESS::Process::IsExistProcess(const CStringA process_name) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -51,7 +51,7 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(CStringA process_name) const
 	return MOONG::PROCESS::RETURN_CODE::CAN_NOT_FIND_PROCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(CStringA process_name) const
+int MOONG::PROCESS::Process::TerminateProcessNormal(const CStringA process_name) const
 {
 	std::vector<CStringA> process_name_list;
 	
@@ -231,7 +231,7 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_nam
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(CStringA file_name) const
+int MOONG::PROCESS::Process::TerminateProcess(const CStringA file_name) const
 {
 	std::vector<CStringA> process_name_list;
 
