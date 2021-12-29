@@ -36,7 +36,7 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const CStringA process_name) const
 	}
 
 	do {
-		CStringA exe_file(pe32.szExeFile);
+		const CStringA exe_file(pe32.szExeFile);
 
 		if(process_name.CompareNoCase(exe_file) == 0)
 		{
@@ -84,7 +84,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& proce
 	do {
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			CStringA exe_file(pe32.szExeFile);
+			const CStringA exe_file(pe32.szExeFile);
 
 			if(process_name_list[i].CompareNoCase(exe_file) == 0)
 			{
@@ -198,7 +198,7 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_nam
 	do {
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			CStringA exe_file(pe32.szExeFile);
+			const CStringA exe_file(pe32.szExeFile);
 
 			if(process_name_list[i].CompareNoCase(exe_file) == 0)
 			{
