@@ -12,10 +12,9 @@
 #include "Process.h"
 
 #include <tlhelp32.h>
-#include <tchar.h>
 #include <algorithm>
 
-BOOL MOONG::PROCESS::Process::IsExistProcess(const CStringA process_name) const
+BOOL MOONG::PROCESS::Process::IsExistProcess(const std::string process_name) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -35,10 +34,13 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const CStringA process_name) const
 		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
 	}
 
-	do {
-		const CStringA exe_file(pe32.szExeFile);
+	char exe_file[MAX_PATH] = { 0 };
+	size_t convertedChars = 0;
 
-		if(process_name.CompareNoCase(exe_file) == 0)
+	do {
+		wcstombs_s(&convertedChars, exe_file, MAX_PATH, pe32.szExeFile, _TRUNCATE);
+
+		if (_stricmp(process_name.c_str(), exe_file) == 0)
 		{
 			CloseHandle(hProcessSnap);
 
@@ -51,16 +53,16 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const CStringA process_name) const
 	return MOONG::PROCESS::RETURN_CODE::CAN_NOT_FIND_PROCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(const CStringA process_name) const
+int MOONG::PROCESS::Process::TerminateProcessNormal(const std::string process_name) const
 {
-	std::vector<CStringA> process_name_list;
+	std::vector<std::string> process_name_list;
 	
 	process_name_list.push_back(process_name);
 
 	return this->TerminateProcessNormal(process_name_list);
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& process_name_list) const
+int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -81,12 +83,15 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<CStringA>& proce
 
 	bool is_process_name_same = false;
 
+	char exe_file[MAX_PATH] = { 0 };
+	size_t convertedChars = 0;
+
 	do {
+		wcstombs_s(&convertedChars, exe_file, MAX_PATH, pe32.szExeFile, _TRUNCATE);
+
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			const CStringA exe_file(pe32.szExeFile);
-
-			if(process_name_list[i].CompareNoCase(exe_file) == 0)
+			if (_stricmp(process_name_list[i].c_str(), exe_file) == 0)
 			{
 				is_process_name_same = true;
 
@@ -173,7 +178,7 @@ int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std:
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_name_list) const
+int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_name_list) const
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -195,12 +200,15 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_nam
 
 	bool is_process_name_same = false;
 
+	char exe_file[MAX_PATH] = { 0 };
+	size_t convertedChars = 0;
+
 	do {
+		wcstombs_s(&convertedChars, exe_file, MAX_PATH, pe32.szExeFile, _TRUNCATE);
+
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			const CStringA exe_file(pe32.szExeFile);
-
-			if(process_name_list[i].CompareNoCase(exe_file) == 0)
+			if (_stricmp(process_name_list[i].c_str(), exe_file) == 0)
 			{
 				is_process_name_same = true;
 
@@ -231,9 +239,9 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<CStringA>& process_nam
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(const CStringA file_name) const
+int MOONG::PROCESS::Process::TerminateProcess(const std::string file_name) const
 {
-	std::vector<CStringA> process_name_list;
+	std::vector<std::string> process_name_list;
 
 	process_name_list.push_back(file_name);
 

@@ -9,15 +9,18 @@ int main()
 {
     MOONG::PROCESS::Process process;
 
-    process.IsExistProcess(L"calculator.exe");
+    if (process.IsExistProcess("cAlcUlAtOr.ExE") == MOONG::PROCESS::RETURN_CODE::FIND_PROCESS)
+    {
+        printf("process find.\n");
+    }
 
     //terminateProcess.TerminateProcessNormal("chrome.exe");
 
-    //std::vector<CStringA> test;
+    std::vector<std::string> test;
 
-    //test.push_back("calculator.exe");
+    test.push_back("calculator.exe");
 
-    //terminateProcess.TerminateProcessNormal(test);
+    process.TerminateProcessNormal(test);
 
     return 0;
 }
