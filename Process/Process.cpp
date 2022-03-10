@@ -1,14 +1,3 @@
-#pragma region 프로세스 킬 할 때 참조
-// TODO: 윈도우 일일이 찾는 방법에서 수정...
-//		PID에서 HWND를 얻거나
-//		HANDLE에서 HWND를 얻거나
-//		(HANDLE hGetFromPID = OpenProcess(MAXIMUM_ALLOWED, FALSE, pe32.th32ProcessID)
-//
-//		EnumWindows()
-//		https://stackoverflow.com/questions/11711417/get-hwnd-by-process-id-c
-#pragma endregion 프로세스 킬 할 때 참조
-
-
 #include "Process.h"
 
 #include <tlhelp32.h>
@@ -33,7 +22,8 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const std::string process_name) con
 
 		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
 	}
-
+	
+#if _MSC_VER > 1200
 	char exe_file[MAX_PATH] = { 0 };
 	size_t convertedChars = 0;
 
@@ -42,6 +32,11 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const std::string process_name) con
 
 		if (_stricmp(process_name.c_str(), exe_file) == 0)
 		{
+#else
+	do {
+		if (_stricmp(process_name.c_str(), pe32.szExeFile) == 0)
+		{
+#endif
 			CloseHandle(hProcessSnap);
 
 			return MOONG::PROCESS::RETURN_CODE::FIND_PROCESS;
@@ -83,6 +78,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 
 	bool is_process_name_same = false;
 
+#if _MSC_VER > 1200
 	char exe_file[MAX_PATH] = { 0 };
 	size_t convertedChars = 0;
 
@@ -93,6 +89,13 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 		{
 			if (_stricmp(process_name_list[i].c_str(), exe_file) == 0)
 			{
+#else
+	do {
+		for (size_t i = 0; i < process_name_list.size(); i++)
+		{
+			if (_stricmp(process_name_list[i].c_str(), pe32.szExeFile) == 0)
+			{
+#endif
 				is_process_name_same = true;
 
 				break;
@@ -199,7 +202,8 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_
 	}
 
 	bool is_process_name_same = false;
-
+	
+#if _MSC_VER > 1200
 	char exe_file[MAX_PATH] = { 0 };
 	size_t convertedChars = 0;
 
@@ -209,6 +213,12 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
 			if (_stricmp(process_name_list[i].c_str(), exe_file) == 0)
+#else
+	do {
+		for (size_t i = 0; i < process_name_list.size(); i++)
+		{
+			if (_stricmp(process_name_list[i].c_str(), pe32.szExeFile) == 0)
+#endif
 			{
 				is_process_name_same = true;
 
