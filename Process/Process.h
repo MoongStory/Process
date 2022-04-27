@@ -22,12 +22,9 @@ namespace MOONG
 			
 			namespace FAILURE
 			{
-				enum FAILURE
-				{
-					CAN_NOT_FIND_PROCESS = 1,
-					ERROR_CREATE_TOOLHELP32_SNAPSHOT = 2,
-					ERROR_PROCESS32_FIRST = 3
-				};
+				static const int CAN_NOT_FIND_PROCESS = 1;
+				static const int ERROR_CREATE_TOOLHELP32_SNAPSHOT = 2;
+				static const int ERROR_PROCESS32_FIRST = 3;
 			}
 		}
 

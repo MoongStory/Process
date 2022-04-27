@@ -22,7 +22,7 @@ int MOONG::PROCESS::Process::IsExistProcess(const std::string process_name)
 
 		return MOONG::PROCESS::RETURN::FAILURE::ERROR_PROCESS32_FIRST;
 	}
-	
+
 #if _MSC_VER > 1200
 	char exe_file[MAX_PATH] = { 0 };
 	size_t convertedChars = 0;
