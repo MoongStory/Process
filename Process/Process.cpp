@@ -3,13 +3,13 @@
 #include <tlhelp32.h>
 #include <algorithm>
 
-BOOL MOONG::PROCESS::Process::IsExistProcess(const std::string process_name) const
+int MOONG::PROCESS::Process::IsExistProcess(const std::string process_name)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return MOONG::PROCESS::RETURN_CODE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -20,7 +20,7 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const std::string process_name) con
 	{
 		CloseHandle(hProcessSnap);
 
-		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_PROCESS32_FIRST;
 	}
 	
 #if _MSC_VER > 1200
@@ -39,31 +39,31 @@ BOOL MOONG::PROCESS::Process::IsExistProcess(const std::string process_name) con
 #endif
 			CloseHandle(hProcessSnap);
 
-			return MOONG::PROCESS::RETURN_CODE::FIND_PROCESS;
+			return MOONG::PROCESS::RETURN::FIND_PROCESS;
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
 
 	CloseHandle(hProcessSnap);
 
-	return MOONG::PROCESS::RETURN_CODE::CAN_NOT_FIND_PROCESS;
+	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(const std::string process_name) const
+int MOONG::PROCESS::Process::TerminateProcessNormal(const std::string process_name)
 {
 	std::vector<std::string> process_name_list;
 	
 	process_name_list.push_back(process_name);
 
-	return this->TerminateProcessNormal(process_name_list);
+	return MOONG::PROCESS::Process::TerminateProcessNormal(process_name_list);
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list) const
+int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return MOONG::PROCESS::RETURN_CODE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -73,7 +73,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 	{
 		CloseHandle(hProcessSnap);
 
-		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_PROCESS32_FIRST;
 	}
 
 	bool is_process_name_same = false;
@@ -107,7 +107,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 			is_process_name_same = false;
 
 			// TODO: ProcessID를 바로 HWND로 변경하는 방법 찾아보기.
-			this->SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
+			MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
 
 			break;
 
@@ -120,16 +120,16 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid) const
+int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
 {
 	std::vector<HWND> startHWND;
 
 	startHWND.push_back(hWnd);
 
-	return this->SendTerminateMessageToProcessWithSamePID(startHWND, pid);
+	return MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(startHWND, pid);
 }
 
-int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid) const
+int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
 {
 	HWND hWnd = NULL;
 	TCHAR szCaption[1025] = { 0 };
@@ -181,13 +181,13 @@ int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std:
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_name_list) const
+int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return MOONG::PROCESS::RETURN_CODE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -198,7 +198,7 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_
 	{
 		CloseHandle(hProcessSnap);
 
-		return MOONG::PROCESS::RETURN_CODE::ERROR_PROCESS32_FIRST;
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_PROCESS32_FIRST;
 	}
 
 	bool is_process_name_same = false;
@@ -249,16 +249,16 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(const std::string file_name) const
+int MOONG::PROCESS::Process::TerminateProcess(const std::string file_name)
 {
 	std::vector<std::string> process_name_list;
 
 	process_name_list.push_back(file_name);
 
-	return this->TerminateProcess(process_name_list);
+	return MOONG::PROCESS::Process::TerminateProcess(process_name_list);
 }
 
-BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd) const
+BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
