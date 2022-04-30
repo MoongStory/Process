@@ -3,7 +3,7 @@
 #include <tlhelp32.h>
 #include <algorithm>
 
-int MOONG::PROCESS::Process::IsExistProcess(const std::string process_name)
+int MOONG::Process::IsExistProcess(const std::string process_name)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -48,16 +48,16 @@ int MOONG::PROCESS::Process::IsExistProcess(const std::string process_name)
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(const std::string process_name)
+int MOONG::Process::TerminateProcessNormal(const std::string process_name)
 {
 	std::vector<std::string> process_name_list;
 	
 	process_name_list.push_back(process_name);
 
-	return MOONG::PROCESS::Process::TerminateProcessNormal(process_name_list);
+	return MOONG::Process::TerminateProcessNormal(process_name_list);
 }
 
-int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list)
+int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -107,7 +107,7 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 			is_process_name_same = false;
 
 			// TODO: ProcessID를 바로 HWND로 변경하는 방법 찾아보기.
-			MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
+			MOONG::Process::SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
 
 			break;
 
@@ -120,16 +120,16 @@ int MOONG::PROCESS::Process::TerminateProcessNormal(std::vector<std::string>& pr
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
+int MOONG::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
 {
 	std::vector<HWND> startHWND;
 
 	startHWND.push_back(hWnd);
 
-	return MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(startHWND, pid);
+	return MOONG::Process::SendTerminateMessageToProcessWithSamePID(startHWND, pid);
 }
 
-int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
+int MOONG::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
 {
 	HWND hWnd = NULL;
 	TCHAR szCaption[1025] = { 0 };
@@ -181,7 +181,7 @@ int MOONG::PROCESS::Process::SendTerminateMessageToProcessWithSamePID(const std:
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_name_list)
+int MOONG::Process::TerminateProcess(std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -249,16 +249,16 @@ int MOONG::PROCESS::Process::TerminateProcess(std::vector<std::string>& process_
 	return EXIT_SUCCESS;
 }
 
-int MOONG::PROCESS::Process::TerminateProcess(const std::string file_name)
+int MOONG::Process::TerminateProcess(const std::string file_name)
 {
 	std::vector<std::string> process_name_list;
 
 	process_name_list.push_back(file_name);
 
-	return MOONG::PROCESS::Process::TerminateProcess(process_name_list);
+	return MOONG::Process::TerminateProcess(process_name_list);
 }
 
-BOOL MOONG::PROCESS::Process::TerminateProcess(HWND hwnd)
+BOOL MOONG::Process::TerminateProcess(HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
