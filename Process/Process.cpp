@@ -258,7 +258,7 @@ int MOONG::Process::TerminateProcess(const std::string file_name)
 	return MOONG::Process::TerminateProcess(process_name_list);
 }
 
-BOOL MOONG::Process::TerminateProcess(HWND hwnd)
+bool MOONG::Process::TerminateProcess(HWND hwnd)
 {
 	if (hwnd == NULL)
 	{

@@ -37,7 +37,7 @@ namespace MOONG
 		static int TerminateProcessNormal(std::vector<std::string>& process_name_list);
 		static int TerminateProcess(std::vector<std::string>& process_name_list);
 		static int TerminateProcess(const std::string file_name);
-		static BOOL TerminateProcess(HWND hwnd);
+		static bool TerminateProcess(HWND hwnd);
 	private:
 		static int SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid);
 		static int SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid);
