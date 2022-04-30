@@ -230,7 +230,7 @@ int MOONG::Process::TerminateProcess(std::vector<std::string>& process_name_list
 		{
 			is_process_name_same = false;
 
-			HANDLE hGetFromPID = OpenProcess(MAXIMUM_ALLOWED, FALSE, pe32.th32ProcessID);
+			HANDLE hGetFromPID = OpenProcess(MAXIMUM_ALLOWED, false, pe32.th32ProcessID);
 
 			if (hGetFromPID)
 			{
@@ -262,14 +262,14 @@ bool MOONG::Process::TerminateProcess(HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
-		return FALSE;
+		return false;
 	}
 
 	DWORD dwPid = 0;
 
 	::GetWindowThreadProcessId(hwnd, &dwPid);
 
-	HANDLE hGetFromPID = ::OpenProcess(MAXIMUM_ALLOWED, FALSE, dwPid);
+	HANDLE hGetFromPID = ::OpenProcess(MAXIMUM_ALLOWED, false, dwPid);
 
 	if (hGetFromPID)
 	{
@@ -280,8 +280,8 @@ bool MOONG::Process::TerminateProcess(HWND hwnd)
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
