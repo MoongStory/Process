@@ -109,8 +109,6 @@ int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_nam
 			// TODO: ProcessID를 바로 HWND로 변경하는 방법 찾아보기.
 			MOONG::Process::SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
 
-			break;
-
 			//break; // 주석 해제할 경우 동일한 이름의 프로세스가 2개 이상 실행중일 경우 하나만 종료됨.
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
