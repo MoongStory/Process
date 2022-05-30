@@ -32,15 +32,14 @@ namespace MOONG
 	class Process
 	{
 	public:
-		static int IsExistProcess(const std::string process_name);
-		static int TerminateProcessNormal(const std::string process_name);
-		static int TerminateProcessNormal(std::vector<std::string>& process_name_list);
-		static int TerminateProcess(std::vector<std::string>& process_name_list);
-		static int TerminateProcess(const std::string file_name);
-		static bool TerminateProcess(HWND hwnd);
+		static const int IsExistProcess(const std::string process_name);
+		static const int TerminateProcessNormal(const std::string process_name);
+		static const int TerminateProcessNormal(std::vector<std::string>& process_name_list);
+		static const int TerminateProcess(std::vector<std::string>& process_name_list);
+		static const int TerminateProcess(const std::string file_name);
+		static const bool TerminateProcess(HWND hwnd);
 	private:
-		static int SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid);
-		static int SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid);
+		static const int SendCloseMessageToProcessWithSamePID(const DWORD pid);
 	};
 }
 

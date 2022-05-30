@@ -3,7 +3,7 @@
 #include <tlhelp32.h>
 #include <algorithm>
 
-int MOONG::Process::IsExistProcess(const std::string process_name)
+const int MOONG::Process::IsExistProcess(const std::string process_name)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -48,7 +48,7 @@ int MOONG::Process::IsExistProcess(const std::string process_name)
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-int MOONG::Process::TerminateProcessNormal(const std::string process_name)
+const int MOONG::Process::TerminateProcessNormal(const std::string process_name)
 {
 	std::vector<std::string> process_name_list;
 	
@@ -57,7 +57,7 @@ int MOONG::Process::TerminateProcessNormal(const std::string process_name)
 	return MOONG::Process::TerminateProcessNormal(process_name_list);
 }
 
-int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list)
+const int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -106,8 +106,7 @@ int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_nam
 		{
 			is_process_name_same = false;
 
-			// TODO: ProcessID를 바로 HWND로 변경하는 방법 찾아보기.
-			MOONG::Process::SendTerminateMessageToProcessWithSamePID(GetDesktopWindow(), pe32.th32ProcessID);
+			MOONG::Process::SendCloseMessageToProcessWithSamePID(pe32.th32ProcessID);
 
 			//break; // 주석 해제할 경우 동일한 이름의 프로세스가 2개 이상 실행중일 경우 하나만 종료됨.
 		}
@@ -118,68 +117,45 @@ int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_nam
 	return EXIT_SUCCESS;
 }
 
-int MOONG::Process::SendTerminateMessageToProcessWithSamePID(const HWND hWnd, const DWORD pid)
+BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam);
+
+const int MOONG::Process::SendCloseMessageToProcessWithSamePID(const DWORD pid)
 {
-	std::vector<HWND> startHWND;
-
-	startHWND.push_back(hWnd);
-
-	return MOONG::Process::SendTerminateMessageToProcessWithSamePID(startHWND, pid);
-}
-
-int MOONG::Process::SendTerminateMessageToProcessWithSamePID(const std::vector<HWND>& hWndList, DWORD pid)
-{
-	HWND hWnd = NULL;
-	TCHAR szCaption[1025] = { 0 };
-	DWORD dwProcId = 0;
-	std::vector<HWND> hWndListNextDept;
-
-	for (size_t i = 0; i < hWndList.size(); i++)
-	{
-		hWnd = ::GetTopWindow(hWndList[i]);
-
-		do
-		{
-			::GetWindowText(hWnd, szCaption, 1024);
-			::GetWindowThreadProcessId(hWnd, &dwProcId);
-
-			if (szCaption[0] != '\0' && ::IsWindowVisible(hWnd))
-			{
-				if (dwProcId == pid)
-				{
-					// 프로세스 종료 시 WM_CLOSE, WM_DESTROY, WM_QUIT 메시지가 순서대로 발생한다.
-					PostMessage(hWnd, WM_CLOSE, NULL, NULL);
-					PostMessage(hWnd, WM_DESTROY, NULL, NULL);
-					PostMessage(hWnd, WM_QUIT, NULL, NULL);
-
-					// 크롬 같은 경우 창을 여러개 열어 사용할 경우 특정 핸들의 동일한 자식 레벨에 윈도우 핸들이 존재하므로
-					// PID가 일치하는 윈도우 핸들을 찾았더라도 형제 레벨 관계에 있는 모든 핸들들을 탐색한다.
-					// 부모 레벨을 A, 자식 레벨을 B, 손자 레벨을 C라고 하고 Target이 되는 윈도우를 T라고 가정한다면
-					// 크롬 윈도우가 여러개일 때 C 레벨에 형제 관계로 T가 여러개 존재.
-					continue;
-				}
-
-				// 윈도우 기본 계산기의 경우 바탕화면에 윈도우가 떠 있으면 프레임 윈도우 하위에 UI 윈도우가 있어 자식노드 탐색이 필요.
-				// 특이한게 최소화 버튼을 눌러 창을 최소화 시키면 UI 윈도우가 바탕화면 자식 레벨로 바뀜.
-				// 부모 레벨을 A, 자식 레벨을 B, 손자 레벨을 C라고 하고 Target이 되는 윈도우를 T라고 가정한다면
-				// 계산기 윈도우가 바탕화면에 떠있을 경우 A - B - T이고, 최소화 된 상태에서는 A - T 상태가 됨.
-				if (GetWindow(hWnd, GW_CHILD))
-				{
-					hWndListNextDept.push_back(hWnd);
-				}
-			}
-		} while (hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT));
-	}
-
-	if (hWndListNextDept.size() > 0)
-	{
-		return SendTerminateMessageToProcessWithSamePID(hWndListNextDept, pid);
-	}
-
+	EnumWindows(FindProcessToReceiveCloseMessage, (LPARAM)pid);
+	
 	return EXIT_SUCCESS;
 }
 
-int MOONG::Process::TerminateProcess(std::vector<std::string>& process_name_list)
+BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam)
+{
+	// 윈도우의 상태나 스타일에 따라 처리도 가능.
+	// 샘플 코드로 남겨놓음.
+	//BOOL isVisible = IsWindowVisible(hwnd);
+	//DWORD exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+	//BOOL isAppWindow = (exStyle & WS_EX_APPWINDOW);
+	//BOOL isToolWindow = (exStyle & WS_EX_TOOLWINDOW);
+	// 계산기 윈도우 떠있을때랑 최소화 되있을때랑 리턴 결과가 다름. 부모 윈도우가 있다 없다 함.
+	// 파라미터는 GW_OWNER인데 실제로는 parent 값을 얻어옴.
+	//BOOL isOwned = GetWindow(hwnd, GW_OWNER) ? TRUE : FALSE;
+
+	DWORD process_id = 0;
+
+	GetWindowThreadProcessId(hwnd, &process_id);
+
+	// GetParent() 함수를 통해 부모 윈도우를 체크하면 계산기의 경우 윈도우 떠있을때랑 최소화 되있을때랑 리턴 결과가 다름.
+	// 트리 구조가 바뀌면서 부모 윈도우가 있다 없다 함.
+	// 따라서 "GetParent(hwnd) == NULL" 이런식으로 체크할 경우 계산기 윈도우가 떠있는지 최소화 상태인지에 따라 결과가 다름.
+	if (process_id == lParam)
+	{
+		PostMessage(hwnd, WM_CLOSE, NULL, NULL);
+		PostMessage(hwnd, WM_DESTROY, NULL, NULL);
+		PostMessage(hwnd, WM_QUIT, NULL, NULL);
+	}
+
+	return TRUE;
+}
+
+const int MOONG::Process::TerminateProcess(std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -247,7 +223,7 @@ int MOONG::Process::TerminateProcess(std::vector<std::string>& process_name_list
 	return EXIT_SUCCESS;
 }
 
-int MOONG::Process::TerminateProcess(const std::string file_name)
+const int MOONG::Process::TerminateProcess(const std::string file_name)
 {
 	std::vector<std::string> process_name_list;
 
@@ -256,7 +232,7 @@ int MOONG::Process::TerminateProcess(const std::string file_name)
 	return MOONG::Process::TerminateProcess(process_name_list);
 }
 
-bool MOONG::Process::TerminateProcess(HWND hwnd)
+const bool MOONG::Process::TerminateProcess(HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
