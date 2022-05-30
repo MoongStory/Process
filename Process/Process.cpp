@@ -145,7 +145,7 @@ BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam)
 	// GetParent() 함수를 통해 부모 윈도우를 체크하면 계산기의 경우 윈도우 떠있을때랑 최소화 되있을때랑 리턴 결과가 다름.
 	// 트리 구조가 바뀌면서 부모 윈도우가 있다 없다 함.
 	// 따라서 "GetParent(hwnd) == NULL" 이런식으로 체크할 경우 계산기 윈도우가 떠있는지 최소화 상태인지에 따라 결과가 다름.
-	if (process_id == lParam)
+	if (process_id == (DWORD)lParam)
 	{
 		PostMessage(hwnd, WM_CLOSE, NULL, NULL);
 		PostMessage(hwnd, WM_DESTROY, NULL, NULL);
