@@ -30,10 +30,10 @@ namespace MOONG
 
 		namespace INTEGRITY_LEVEL
 		{
-			static const int INTEGRITY_LEVEL_LOW = 0;
-			static const int INTEGRITY_LEVEL_MEDIUM = 1;
-			static const int INTEGRITY_LEVEL_HIGH = 2;
-			static const int INTEGRITY_LEVEL_SYSTEM = 3;
+			static const int LOW = 0;
+			static const int MEDIUM = 1;
+			static const int HIGH = 2;
+			static const int SYSTEM = 3;
 		}
 	}
 	
