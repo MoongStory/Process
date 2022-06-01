@@ -27,17 +27,40 @@ namespace MOONG
 				static const int ERROR_PROCESS32_FIRST = 3;
 			}
 		}
+
+		namespace INTEGRITY_LEVEL
+		{
+			static const int INTEGRITY_LEVEL_LOW = 0;
+			static const int INTEGRITY_LEVEL_MEDIUM = 1;
+			static const int INTEGRITY_LEVEL_HIGH = 2;
+			static const int INTEGRITY_LEVEL_SYSTEM = 3;
+		}
 	}
 	
 	class Process
 	{
 	public:
+	protected:
+	private:
+		static const std::string INTEGRITY_LEVEL_SID_UNTRUSTED;
+		static const std::string INTEGRITY_LEVEL_SID_BELOW_LOW;
+		static const std::string INTEGRITY_LEVEL_SID_LOW;
+		static const std::string INTEGRITY_LEVEL_SID_MEDIUM_LOW;
+		static const std::string INTEGRITY_LEVEL_SID_MEDIUM;
+		static const std::string INTEGRITY_LEVEL_SID_HIGH;
+		static const std::string INTEGRITY_LEVEL_SID_SYSTEM;
+
+
+	public:
 		static const int IsExistProcess(const std::string process_name);
+
 		static const int TerminateProcessNormal(const std::string process_name);
 		static const int TerminateProcessNormal(std::vector<std::string>& process_name_list);
 		static const int TerminateProcess(std::vector<std::string>& process_name_list);
 		static const int TerminateProcess(const std::string file_name);
 		static const bool TerminateProcess(HWND hwnd);
+
+		static const int CreateProcessWithIntegrityLevel(const int integrity_level, const std::string path_process, const std::string param = "");
 	private:
 		static const int SendCloseMessageToProcessWithSamePID(const DWORD pid);
 	};

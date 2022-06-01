@@ -2,17 +2,28 @@
 
 int main()
 {
-    if (MOONG::Process::IsExistProcess("cAlcUlAtOr.ExE") == MOONG::PROCESS::RETURN::FIND_PROCESS)
+    MOONG::Process::CreateProcessWithIntegrityLevel(MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_MEDIUM, "C:\\WINDOWS\\system32\\mspaint.exe");
+
+    if (MOONG::Process::IsExistProcess("mspaint.exe") == MOONG::PROCESS::RETURN::FIND_PROCESS)
     {
         printf("process find.\n");
     }
 
-    //MOONG::Process::TerminateProcessNormal("chrome.exe");
+    system("pause");
+    MOONG::Process::TerminateProcessNormal("mspaint.exe");
+
+    MOONG::Process::CreateProcessWithIntegrityLevel(MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_MEDIUM, "C:\\WINDOWS\\system32\\mspaint.exe");
+
+    system("pause");
+    MOONG::Process::TerminateProcess("mspaint.exe");
+
+    MOONG::Process::CreateProcessWithIntegrityLevel(MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_MEDIUM, "C:\\WINDOWS\\system32\\mspaint.exe");
 
     std::vector<std::string> test;
 
-    test.push_back("calculator.exe");
+    test.push_back("mspaint.exe");
 
+    system("pause");
     MOONG::Process::TerminateProcessNormal(test);
 
     return 0;

@@ -3,6 +3,16 @@
 #include <tlhelp32.h>
 #include <algorithm>
 
+#include <sddl.h> // ConvertStringSidToSid 호출 시 필요.
+
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_UNTRUSTED		= "S-1-16-0";
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_BELOW_LOW		= "S-1-16-2048";
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_LOW			= "S-1-16-4096";
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_MEDIUM_LOW	= "S-1-16-6144";
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_MEDIUM		= "S-1-16-8192";
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_HIGH			= "S-1-16-12288";
+const std::string MOONG::Process::INTEGRITY_LEVEL_SID_SYSTEM		= "S-1-16-16384";
+
 const int MOONG::Process::IsExistProcess(const std::string process_name)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
@@ -258,4 +268,152 @@ const bool MOONG::Process::TerminateProcess(HWND hwnd)
 	}
 
 	return true;
+}
+
+const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_level, const std::string path_process, const std::string param/* = ""*/)
+{
+	// Set integrity SID
+	std::string integrity_sid;
+
+	switch (integrity_level)
+	{
+	case MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_LOW:
+		integrity_sid = INTEGRITY_LEVEL_SID_LOW;
+		break;
+	case MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_MEDIUM:
+		integrity_sid = INTEGRITY_LEVEL_SID_MEDIUM;
+		break;
+	case MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_HIGH:
+		integrity_sid = INTEGRITY_LEVEL_SID_HIGH;
+		break;
+	case MOONG::PROCESS::INTEGRITY_LEVEL::INTEGRITY_LEVEL_SYSTEM:
+		integrity_sid = INTEGRITY_LEVEL_SID_SYSTEM;
+		break;
+	default:
+		integrity_sid = INTEGRITY_LEVEL_SID_LOW;
+		break;
+	}
+
+	BOOL					fRet = FALSE;
+	HANDLE					hToken = NULL;
+	HANDLE					hNewToken = NULL;
+	PSID					pIntegritySid = NULL;
+	TOKEN_MANDATORY_LABEL	TIL = { 0 };
+	PROCESS_INFORMATION		ProcInfo = { 0 };
+	STARTUPINFOA			StartupInfo = { 0 };
+
+	fRet = OpenProcessToken(GetCurrentProcess(),
+		TOKEN_DUPLICATE |
+		TOKEN_ADJUST_DEFAULT |
+		TOKEN_QUERY |
+		TOKEN_ASSIGN_PRIMARY,
+		&hToken);
+
+	if (!fRet)
+	{
+		goto CleanExit;
+	}
+
+	fRet = DuplicateTokenEx(hToken,
+		0,
+		NULL,
+		SecurityImpersonation,
+		TokenPrimary,
+		&hNewToken);
+
+	if (!fRet)
+	{
+		goto CleanExit;
+	}
+
+	fRet = ConvertStringSidToSidA(integrity_sid.c_str(), &pIntegritySid);
+
+	if (!fRet)
+	{
+		goto CleanExit;
+	}
+
+	TIL.Label.Attributes = SE_GROUP_INTEGRITY;
+	TIL.Label.Sid = pIntegritySid;
+
+	//
+	// Set the process integrity level
+	//
+
+	fRet = SetTokenInformation(hNewToken,
+		TokenIntegrityLevel,
+		&TIL,
+		sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid));
+
+	if (!fRet)
+	{
+		goto CleanExit;
+	}
+
+	//
+	// Create the new process at integrity level
+	//
+
+	if (param.empty() == true)
+	{
+		fRet = CreateProcessAsUserA(hNewToken,
+			path_process.c_str(),
+			NULL,
+			NULL,
+			NULL,
+			FALSE,
+			0,
+			NULL,
+			NULL,
+			&StartupInfo,
+			&ProcInfo);
+	}
+	else
+	{
+		std::string path_process_with_param;
+		path_process_with_param = path_process;
+		path_process_with_param += " ";
+		path_process_with_param += param;
+
+		// 2번째 파라미터 파일 경로 넘기고, 3번째 파라미터 "/s" 넘겼을 때 안 됨.
+		// 파일 경로 끝에 " /s" 붙이고 2번째 파라미터로 넘겼을 때 안 됨.
+		// 파일 경로 끝에 " /s" 붙이고 3번째 파라미터로 넘겼을 때 정상동작 확인.
+		fRet = CreateProcessAsUserA(hNewToken,
+			path_process_with_param.c_str(),
+			NULL,
+			NULL,
+			NULL,
+			FALSE,
+			0,
+			NULL,
+			NULL,
+			&StartupInfo,
+			&ProcInfo);
+	}
+
+CleanExit:
+
+	if (ProcInfo.hProcess != NULL)
+	{
+		CloseHandle(ProcInfo.hProcess);
+	}
+
+	if (ProcInfo.hThread != NULL)
+	{
+		CloseHandle(ProcInfo.hThread);
+	}
+
+	LocalFree(pIntegritySid);
+
+	if (hNewToken != NULL)
+	{
+		CloseHandle(hNewToken);
+	}
+
+	if (hToken != NULL)
+	{
+		CloseHandle(hToken);
+	}
+
+	return EXIT_SUCCESS;
 }
