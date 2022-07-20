@@ -26,7 +26,7 @@ int main()
     //system("pause");
     //MOONG::Process::TerminateProcessNormal(test);
 
-    std::cout << "중복 로그인 여부[" << MOONG::Process::CheckDuplicateExecution() << "]" << std::endl;
+    std::cout << "중복 실행 여부[" << MOONG::Process::CheckDuplicateExecution() << "]" << std::endl;
     system("pause");
 
     return 0;
