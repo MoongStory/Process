@@ -61,6 +61,8 @@ namespace MOONG
 		static const bool TerminateProcess(HWND hwnd);
 
 		static const int CreateProcessWithIntegrityLevel(const int integrity_level, const std::string path_process, const std::string param = "");
+
+		static const bool CheckDuplicateExecution();
 	private:
 		static const int SendCloseMessageToProcessWithSamePID(const DWORD pid);
 	};

@@ -2,8 +2,12 @@
 
 #include <tlhelp32.h>
 #include <algorithm>
+#include <strsafe.h>
 
 #include <sddl.h> // ConvertStringSidToSid 호출 시 필요.
+
+// https://github.com/MoongStory/FileInfo
+#include "../../FileInfo/FileInfo/FileInfo.h"
 
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_UNTRUSTED		= "S-1-16-0";
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_BELOW_LOW		= "S-1-16-2048";
@@ -416,4 +420,22 @@ CleanExit:
 	}
 
 	return EXIT_SUCCESS;
+}
+
+const bool MOONG::Process::CheckDuplicateExecution()
+{
+	SYSTEMTIME creation_time = { 0 };
+	creation_time = MOONG::FileInfo::GetCreationTime();
+
+	char event_name[256] = { 0 };
+	
+	StringCbPrintfA(event_name, sizeof(event_name), "%s_%d%02d%02d%02d%02d%02d", MOONG::FileInfo::GetFileNameWithoutFileExtension().c_str(), creation_time.wYear, creation_time.wMonth, creation_time.wDay, creation_time.wHour, creation_time.wMinute, creation_time.wSecond);
+
+	HANDLE duplicateCheck = CreateEventA(NULL, FALSE, FALSE, event_name);
+	if (GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		return true;
+	}
+
+	return false;
 }
