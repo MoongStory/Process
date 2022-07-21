@@ -11,6 +11,18 @@
 #include <vector>
 #include <Windows.h>
 
+#if _MSC_VER <= 1200
+	#ifndef TOKEN_MANDATORY_LABEL
+		typedef struct _TOKEN_MANDATORY_LABEL {
+			SID_AND_ATTRIBUTES Label;
+		} TOKEN_MANDATORY_LABEL, * PTOKEN_MANDATORY_LABEL;
+	#endif
+
+	#ifndef SE_GROUP_INTEGRITY
+		#define SE_GROUP_INTEGRITY                 (0x00000020L)
+	#endif
+#endif
+
 namespace MOONG
 {
 	namespace PROCESS
@@ -19,7 +31,7 @@ namespace MOONG
 		{
 			static const int SUCCESS = 0;
 			static const int FIND_PROCESS = 0;
-			
+
 			namespace FAILURE
 			{
 				static const int CAN_NOT_FIND_PROCESS = 1;
@@ -36,7 +48,7 @@ namespace MOONG
 			static const int SYSTEM = 3;
 		}
 	}
-	
+
 	class Process
 	{
 	public:

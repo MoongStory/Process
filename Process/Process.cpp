@@ -312,10 +312,13 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 		TOKEN_QUERY |
 		TOKEN_ASSIGN_PRIMARY,
 		&hToken);
-
+	
 	if (!fRet)
 	{
-		goto CleanExit;
+		if (hToken != NULL)
+		{
+			CloseHandle(hToken);
+		}
 	}
 
 	fRet = DuplicateTokenEx(hToken,
@@ -327,14 +330,53 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 
 	if (!fRet)
 	{
-		goto CleanExit;
+		if (hNewToken != NULL)
+		{
+			CloseHandle(hNewToken);
+		}
+		
+		if (hToken != NULL)
+		{
+			CloseHandle(hToken);
+	}
 	}
 
+#if _MSC_VER <= 1200
+	// FIXME: goto를 빼던가... hModule를 멤버 변수로 빼보던가...
+	HMODULE hModule = LoadLibraryA("Advapi32.dll");
+	if(hModule == NULL)
+	{
+		// 실패.
+	}
+	else
+	{
+		typedef BOOL (*Type_ConvertStringSidToSidA)(LPCSTR StringSid, PSID *Sid);
+		Type_ConvertStringSidToSidA ConvertStringSidToSidA = (Type_ConvertStringSidToSidA)GetProcAddress(hModule, "ConvertStringSidToSidA");
+
+		fRet = ConvertStringSidToSidA(integrity_sid.c_str(), &pIntegritySid);
+	}
+
+	if(hModule != NULL)
+	{
+		FreeLibrary(hModule);
+	}
+#else
 	fRet = ConvertStringSidToSidA(integrity_sid.c_str(), &pIntegritySid);
+#endif
 
 	if (!fRet)
 	{
-		goto CleanExit;
+		LocalFree(pIntegritySid);
+		
+		if (hNewToken != NULL)
+		{
+			CloseHandle(hNewToken);
+		}
+		
+		if (hToken != NULL)
+		{
+			CloseHandle(hToken);
+	}
 	}
 
 	TIL.Label.Attributes = SE_GROUP_INTEGRITY;
@@ -344,14 +386,26 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 	// Set the process integrity level
 	//
 
-	fRet = SetTokenInformation(hNewToken,
-		TokenIntegrityLevel,
-		&TIL,
-		sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid));
+#if _MSC_VER <= 1200
+	// TokenIntegrityLevel가 _TOKEN_INFORMATION_CLASS에서 25로 정의되어 있는데 Visual Studio 6.0에서는 버전이 낮아 18로 정의된 값이 마지막이다.
+	fRet = SetTokenInformation(hNewToken, (enum _TOKEN_INFORMATION_CLASS)25 /*TokenIntegrityLevel*/, &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid));
+#else
+	fRet = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid));
+#endif
 
 	if (!fRet)
 	{
-		goto CleanExit;
+		LocalFree(pIntegritySid);
+		
+		if (hNewToken != NULL)
+		{
+			CloseHandle(hNewToken);
+		}
+		
+		if (hToken != NULL)
+		{
+			CloseHandle(hToken);
+	}
 	}
 
 	//
@@ -394,8 +448,6 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 			&StartupInfo,
 			&ProcInfo);
 	}
-
-CleanExit:
 
 	if (ProcInfo.hProcess != NULL)
 	{
