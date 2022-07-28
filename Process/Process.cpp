@@ -342,7 +342,6 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 	}
 
 #if _MSC_VER <= 1200
-	// FIXME: goto¸¦ »©´ø°¡... hModule¸¦ ¸â¹ö º¯¼ö·Î »©º¸´ø°¡...
 	HMODULE hModule = LoadLibraryA("Advapi32.dll");
 	if(hModule == NULL)
 	{
