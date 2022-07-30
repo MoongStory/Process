@@ -477,7 +477,7 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 const bool MOONG::Process::CheckDuplicateExecution()
 {
 	SYSTEMTIME creation_time = { 0 };
-	creation_time = MOONG::FileInfo::GetCreationTime();
+	creation_time = MOONG::FileInfo::GetFileCreationTime();
 
 	char event_name[256] = { 0 };
 	
