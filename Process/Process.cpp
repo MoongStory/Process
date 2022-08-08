@@ -475,12 +475,9 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_le
 
 const bool MOONG::Process::CheckDuplicateExecution()
 {
-	SYSTEMTIME creation_time = { 0 };
-	creation_time = MOONG::FileInfo::GetCreationTime();
-
 	char event_name[256] = { 0 };
 	
-	StringCbPrintfA(event_name, sizeof(event_name), "%s_%d%02d%02d%02d%02d%02d", MOONG::FileInfo::GetFileNameWithoutFileExtension().c_str(), creation_time.wYear, creation_time.wMonth, creation_time.wDay, creation_time.wHour, creation_time.wMinute, creation_time.wSecond);
+	StringCbPrintfA(event_name, sizeof(event_name), "%s_%s", MOONG::FileInfo::GetFolderName().c_str(), MOONG::FileInfo::GetFileNameWithoutFileExtension().c_str());
 
 	HANDLE duplicateCheck = CreateEventA(NULL, FALSE, FALSE, event_name);
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
