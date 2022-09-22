@@ -1,5 +1,7 @@
 #include "Process.h"
 
+#include "../../ConvertString/ConvertString/ConvertString.h"
+
 #include <tlhelp32.h>
 #include <algorithm>
 #include <strsafe.h>
@@ -38,13 +40,8 @@ const int MOONG::Process::IsExistProcess(const std::string process_name)
 	}
 
 #if _MSC_VER > 1200
-	char exe_file[MAX_PATH] = { 0 };
-	size_t convertedChars = 0;
-
 	do {
-		wcstombs_s(&convertedChars, exe_file, MAX_PATH, pe32.szExeFile, _TRUNCATE);
-
-		if (_stricmp(process_name.c_str(), exe_file) == 0)
+		if (_stricmp(process_name.c_str(), MOONG::ConvertString::wstring_to_string(pe32.szExeFile).c_str()) == 0)
 		{
 #else
 	do {
@@ -93,15 +90,10 @@ const int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& proce
 	bool is_process_name_same = false;
 
 #if _MSC_VER > 1200
-	char exe_file[MAX_PATH] = { 0 };
-	size_t convertedChars = 0;
-
 	do {
-		wcstombs_s(&convertedChars, exe_file, MAX_PATH, pe32.szExeFile, _TRUNCATE);
-
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			if (_stricmp(process_name_list[i].c_str(), exe_file) == 0)
+			if (_stricmp(process_name_list[i].c_str(), MOONG::ConvertString::wstring_to_string(pe32.szExeFile).c_str()) == 0)
 			{
 #else
 	do {
@@ -192,15 +184,10 @@ const int MOONG::Process::TerminateProcess(std::vector<std::string>& process_nam
 	bool is_process_name_same = false;
 	
 #if _MSC_VER > 1200
-	char exe_file[MAX_PATH] = { 0 };
-	size_t convertedChars = 0;
-
 	do {
-		wcstombs_s(&convertedChars, exe_file, MAX_PATH, pe32.szExeFile, _TRUNCATE);
-
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			if (_stricmp(process_name_list[i].c_str(), exe_file) == 0)
+			if (_stricmp(process_name_list[i].c_str(), MOONG::ConvertString::wstring_to_string(pe32.szExeFile).c_str()) == 0)
 #else
 	do {
 		for (size_t i = 0; i < process_name_list.size(); i++)
