@@ -141,13 +141,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ConvertString\ConvertString\ConvertString.cpp" />
+    <ClCompile Include="..\..\ConvertDataType\ConvertDataType\ConvertDataType.cpp" />
     <ClCompile Include="..\..\FileInfo\FileInfo\FileInfo.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ConvertString\ConvertString\ConvertString.h" />
+    <ClInclude Include="..\..\ConvertDataType\ConvertDataType\ConvertDataType.h" />
     <ClInclude Include="..\..\FileInfo\FileInfo\FileInfo.h" />
     <ClInclude Include="Process.h" />
   </ItemGroup>

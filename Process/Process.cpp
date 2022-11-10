@@ -1,7 +1,7 @@
 #include "Process.h"
 
-// https://github.com/MoongStory/ConvertString
-#include "../../ConvertString/ConvertString/ConvertString.h"
+// https://github.com/MoongStory/ConvertDataType
+#include "../../ConvertDataType/ConvertDataType/ConvertDataType.h"
 
 #include <tlhelp32.h>
 #include <algorithm>
@@ -42,7 +42,7 @@ const int MOONG::Process::IsExistProcess(const std::string process_name)
 
 #if _MSC_VER > 1200
 	do {
-		if (_stricmp(process_name.c_str(), MOONG::ConvertString::wstring_to_string(pe32.szExeFile).c_str()) == 0)
+		if (_stricmp(process_name.c_str(), MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile).c_str()) == 0)
 		{
 #else
 	do {
@@ -94,7 +94,7 @@ const int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& proce
 	do {
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			if (_stricmp(process_name_list[i].c_str(), MOONG::ConvertString::wstring_to_string(pe32.szExeFile).c_str()) == 0)
+			if (_stricmp(process_name_list[i].c_str(), MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile).c_str()) == 0)
 			{
 #else
 	do {
@@ -188,7 +188,7 @@ const int MOONG::Process::TerminateProcess(std::vector<std::string>& process_nam
 	do {
 		for (size_t i = 0; i < process_name_list.size(); i++)
 		{
-			if (_stricmp(process_name_list[i].c_str(), MOONG::ConvertString::wstring_to_string(pe32.szExeFile).c_str()) == 0)
+			if (_stricmp(process_name_list[i].c_str(), MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile).c_str()) == 0)
 #else
 	do {
 		for (size_t i = 0; i < process_name_list.size(); i++)
