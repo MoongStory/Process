@@ -37,6 +37,7 @@ namespace MOONG
 				static const int CAN_NOT_FIND_PROCESS = 1;
 				static const int ERROR_CREATE_TOOLHELP32_SNAPSHOT = 2;
 				static const int ERROR_PROCESS32_FIRST = 3;
+				static const int VECTOR_IS_EMPTY = 4;
 			}
 		}
 
@@ -65,6 +66,7 @@ namespace MOONG
 
 	public:
 		static const int IsExistProcess(const std::string process_name);
+		static const int IsExistProcess(const std::vector<std::string> process_name_list);
 
 		static const int TerminateProcessNormal(const std::string process_name);
 		static const int TerminateProcessNormal(std::vector<std::string>& process_name_list);

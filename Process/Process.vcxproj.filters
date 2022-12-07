@@ -30,6 +30,9 @@
     <ClCompile Include="..\..\ConvertDataType\ConvertDataType\ConvertDataType.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\StringTool\StringTool\StringTool.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Process.h">
@@ -39,6 +42,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ConvertDataType\ConvertDataType\ConvertDataType.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\StringTool\StringTool\StringTool.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

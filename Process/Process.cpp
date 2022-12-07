@@ -1,7 +1,7 @@
 #include "Process.h"
 
-// https://github.com/MoongStory/ConvertDataType
 #include "../../ConvertDataType/ConvertDataType/ConvertDataType.h"
+#include "../../StringTool/StringTool/StringTool.h"
 
 #include <tlhelp32.h>
 #include <algorithm>
@@ -42,11 +42,11 @@ const int MOONG::Process::IsExistProcess(const std::string process_name)
 
 #if _MSC_VER > 1200
 	do {
-		if (_stricmp(process_name.c_str(), MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile).c_str()) == 0)
+		if (MOONG::StringTool::compare(process_name, MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile), true) == 0)
 		{
 #else
 	do {
-		if (_stricmp(process_name.c_str(), pe32.szExeFile) == 0)
+		if (MOONG::StringTool::compare(process_name, pe32.szExeFile, true) == 0)
 		{
 #endif
 			CloseHandle(hProcessSnap);
@@ -57,6 +57,52 @@ const int MOONG::Process::IsExistProcess(const std::string process_name)
 
 	CloseHandle(hProcessSnap);
 
+	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
+}
+
+const int MOONG::Process::IsExistProcess(const std::vector<std::string> process_name_list)
+{
+	if(process_name_list.size() <= 0)
+	{
+		return MOONG::PROCESS::RETURN::FAILURE::VECTOR_IS_EMPTY;
+	}
+
+	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
+	
+	if (hProcessSnap == INVALID_HANDLE_VALUE)
+	{
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_CREATE_TOOLHELP32_SNAPSHOT;
+	}
+	
+	PROCESSENTRY32 pe32 = { 0 };
+	
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+	
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		CloseHandle(hProcessSnap);
+		
+		return MOONG::PROCESS::RETURN::FAILURE::ERROR_PROCESS32_FIRST;
+	}
+	
+	do {
+		for(size_t i = 0; i < process_name_list.size(); i++)
+		{
+#if _MSC_VER > 1200
+			if (MOONG::StringTool::compare(process_name_list[i], MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile), true) == 0)
+#else
+			if (MOONG::StringTool::compare(process_name_list[i], pe32.szExeFile, true) == 0)
+#endif
+			{
+				CloseHandle(hProcessSnap);
+				
+				return MOONG::PROCESS::RETURN::FIND_PROCESS;
+			}
+		}
+	} while (Process32Next(hProcessSnap, &pe32));
+	
+	CloseHandle(hProcessSnap);
+			
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
