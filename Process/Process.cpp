@@ -9,7 +9,6 @@
 
 #include <sddl.h> // ConvertStringSidToSid 호출 시 필요.
 
-// https://github.com/MoongStory/FileInfo
 #include "../../FileInfo/FileInfo/FileInfo.h"
 
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_UNTRUSTED		= "S-1-16-0";
@@ -20,7 +19,7 @@ const std::string MOONG::Process::INTEGRITY_LEVEL_SID_MEDIUM		= "S-1-16-8192";
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_HIGH			= "S-1-16-12288";
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_SYSTEM		= "S-1-16-16384";
 
-const int MOONG::Process::IsExistProcess(const std::string process_name)
+const int MOONG::Process::IsExistProcess(IN const std::string process_name)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -60,7 +59,7 @@ const int MOONG::Process::IsExistProcess(const std::string process_name)
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-const int MOONG::Process::IsExistProcess(const std::vector<std::string> process_name_list)
+const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> process_name_list)
 {
 	if(process_name_list.size() <= 0)
 	{
@@ -106,7 +105,7 @@ const int MOONG::Process::IsExistProcess(const std::vector<std::string> process_
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-const int MOONG::Process::TerminateProcessNormal(const std::string process_name)
+const int MOONG::Process::TerminateProcessNormal(IN const std::string process_name)
 {
 	std::vector<std::string> process_name_list;
 	
@@ -115,7 +114,7 @@ const int MOONG::Process::TerminateProcessNormal(const std::string process_name)
 	return MOONG::Process::TerminateProcessNormal(process_name_list);
 }
 
-const int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& process_name_list)
+const int MOONG::Process::TerminateProcessNormal(IN std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -172,7 +171,7 @@ const int MOONG::Process::TerminateProcessNormal(std::vector<std::string>& proce
 
 BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam);
 
-const int MOONG::Process::SendCloseMessageToProcessWithSamePID(const DWORD pid)
+const int MOONG::Process::SendCloseMessageToProcessWithSamePID(IN const DWORD pid)
 {
 	EnumWindows(FindProcessToReceiveCloseMessage, (LPARAM)pid);
 	
@@ -208,7 +207,7 @@ BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam)
 	return TRUE;
 }
 
-const int MOONG::Process::TerminateProcess(std::vector<std::string>& process_name_list)
+const int MOONG::Process::TerminateProcess(IN std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -271,7 +270,7 @@ const int MOONG::Process::TerminateProcess(std::vector<std::string>& process_nam
 	return EXIT_SUCCESS;
 }
 
-const int MOONG::Process::TerminateProcess(const std::string file_name)
+const int MOONG::Process::TerminateProcess(IN const std::string file_name)
 {
 	std::vector<std::string> process_name_list;
 
@@ -280,7 +279,7 @@ const int MOONG::Process::TerminateProcess(const std::string file_name)
 	return MOONG::Process::TerminateProcess(process_name_list);
 }
 
-const bool MOONG::Process::TerminateProcess(HWND hwnd)
+const bool MOONG::Process::TerminateProcess(IN HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
@@ -308,7 +307,7 @@ const bool MOONG::Process::TerminateProcess(HWND hwnd)
 	return true;
 }
 
-const int MOONG::Process::CreateProcessWithIntegrityLevel(const int integrity_level, const std::string path_process, const std::string param/* = ""*/)
+const int MOONG::Process::CreateProcessWithIntegrityLevel(IN const int integrity_level, IN const std::string path_process, IN const std::string param/* = ""*/)
 {
 	// Set integrity SID
 	std::string integrity_sid;

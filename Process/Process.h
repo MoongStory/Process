@@ -65,20 +65,20 @@ namespace MOONG
 
 
 	public:
-		static const int IsExistProcess(const std::string process_name);
-		static const int IsExistProcess(const std::vector<std::string> process_name_list);
+		static const int IsExistProcess(IN const std::string process_name);
+		static const int IsExistProcess(IN const std::vector<std::string> process_name_list);
 
-		static const int TerminateProcessNormal(const std::string process_name);
-		static const int TerminateProcessNormal(std::vector<std::string>& process_name_list);
-		static const int TerminateProcess(std::vector<std::string>& process_name_list);
-		static const int TerminateProcess(const std::string file_name);
-		static const bool TerminateProcess(HWND hwnd);
+		static const int TerminateProcessNormal(IN const std::string process_name);
+		static const int TerminateProcessNormal(IN std::vector<std::string>& process_name_list);
+		static const int TerminateProcess(IN std::vector<std::string>& process_name_list);
+		static const int TerminateProcess(IN const std::string file_name);
+		static const bool TerminateProcess(IN HWND hwnd);
 
-		static const int CreateProcessWithIntegrityLevel(const int integrity_level, const std::string path_process, const std::string param = "");
+		static const int CreateProcessWithIntegrityLevel(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");
 
 		static const bool CheckDuplicateExecution();
 	private:
-		static const int SendCloseMessageToProcessWithSamePID(const DWORD pid);
+		static const int SendCloseMessageToProcessWithSamePID(IN const DWORD pid);
 	};
 }
 
