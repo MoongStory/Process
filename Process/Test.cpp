@@ -26,8 +26,11 @@ int main()
     //system("pause");
     //MOONG::Process::TerminateProcessNormal(test);
 
-    std::cout << "중복 실행 여부[" << MOONG::Process::CheckDuplicateExecution() << "]" << std::endl;
-    system("pause");
+    //std::cout << "중복 실행 여부[" << MOONG::Process::CheckDuplicateExecution() << "]" << std::endl;
+    //system("pause");
+
+    std::cout << "msdege 체크 백그라운드 포함[" << MOONG::Process::IsExistProcess("msedge.exe") << "]" << std::endl;
+    std::cout << "msdege 체크 백그라운드 미포함[" << MOONG::Process::IsExistProcess("msedge.exe", false) << "]" << std::endl;
 
     return 0;
 }
