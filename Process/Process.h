@@ -1,7 +1,7 @@
 // https://github.com/MoongStory/Process
 
 #if _MSC_VER > 1000
-#pragma once
+	#pragma once
 #endif
 
 #ifndef _PROCESS_H_
@@ -65,8 +65,25 @@ namespace MOONG
 
 
 	public:
-		static const int IsExistProcess(IN const std::string process_name);
-		static const int IsExistProcess(IN const std::vector<std::string> process_name_list);
+		/********************************************************************************
+		* 간단한 설명 :
+		*	작업 관리자에 프로세스가 실행중인지 체크.
+		* 파라미터 :
+		*	std::string 또는 std::vector<std::string>
+		*		"작업 관리자 - 세부 정보"에서 확인 가능한 프로세스 이름.
+		*	bool
+		*		백그라운드에서 실행중인 프로세스 포함 여부.
+		* 리턴 값(int) :
+		*	0 - 실행중인 프로세스 있음.
+		*	1 - 실행중인 프로세스 없음.
+		*	2 - CreateToolhelp32Snapshot 호출 실패.
+		*	3 - Process32First 호출 실패.
+		* 사용 예 :
+		*	IsExistProcess("chrome.exe");
+		*	IsExistProcess("msedge.exe", false);
+		*********************************************************************************/
+		static const int IsExistProcess(IN const std::string process_name, const bool include_background_process = true);
+		static const int IsExistProcess(IN const std::vector<std::string> process_name_list, const bool include_background_process = true);
 
 		static const int TerminateProcessNormal(IN const std::string process_name);
 		static const int TerminateProcessNormal(IN std::vector<std::string>& process_name_list);
@@ -79,6 +96,7 @@ namespace MOONG
 		static const bool CheckDuplicateExecution();
 	private:
 		static const int SendCloseMessageToProcessWithSamePID(IN const DWORD pid);
+		static const bool IsBackgroundProcess(IN const DWORD pid);
 	};
 }
 

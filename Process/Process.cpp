@@ -19,7 +19,10 @@ const std::string MOONG::Process::INTEGRITY_LEVEL_SID_MEDIUM		= "S-1-16-8192";
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_HIGH			= "S-1-16-12288";
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_SYSTEM		= "S-1-16-16384";
 
-const int MOONG::Process::IsExistProcess(IN const std::string process_name)
+BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam);
+BOOL CALLBACK CheckBackgroundProcess(HWND hwnd, LPARAM lParam);
+
+const int MOONG::Process::IsExistProcess(IN const std::string process_name, const bool include_background_process/* = true*/)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -38,19 +41,33 @@ const int MOONG::Process::IsExistProcess(IN const std::string process_name)
 
 		return MOONG::PROCESS::RETURN::FAILURE::ERROR_PROCESS32_FIRST;
 	}
-
+	
+	do {
 #if _MSC_VER > 1200
-	do {
 		if (MOONG::StringTool::compare(process_name, MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile), true) == 0)
-		{
 #else
-	do {
 		if (MOONG::StringTool::compare(process_name, pe32.szExeFile, true) == 0)
-		{
 #endif
-			CloseHandle(hProcessSnap);
-
-			return MOONG::PROCESS::RETURN::FIND_PROCESS;
+		{
+			if(false == include_background_process)
+			{
+				if(true == IsBackgroundProcess(pe32.th32ProcessID))
+				{
+					continue;
+				}
+				else
+				{
+					CloseHandle(hProcessSnap);
+					
+					return MOONG::PROCESS::RETURN::FIND_PROCESS;
+				}
+			}
+			else
+			{
+				CloseHandle(hProcessSnap);
+				
+				return MOONG::PROCESS::RETURN::FIND_PROCESS;
+			}
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
 
@@ -59,7 +76,7 @@ const int MOONG::Process::IsExistProcess(IN const std::string process_name)
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> process_name_list)
+const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> process_name_list, const bool include_background_process/* = true*/)
 {
 	if(process_name_list.size() <= 0)
 	{
@@ -93,9 +110,25 @@ const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> proce
 			if (MOONG::StringTool::compare(process_name_list[i], pe32.szExeFile, true) == 0)
 #endif
 			{
-				CloseHandle(hProcessSnap);
-				
-				return MOONG::PROCESS::RETURN::FIND_PROCESS;
+				if(false == include_background_process)
+				{
+					if(true == IsBackgroundProcess(pe32.th32ProcessID))
+					{
+						continue;
+					}
+					else
+					{
+						CloseHandle(hProcessSnap);
+						
+						return MOONG::PROCESS::RETURN::FIND_PROCESS;
+					}
+				}
+				else
+				{
+					CloseHandle(hProcessSnap);
+					
+					return MOONG::PROCESS::RETURN::FIND_PROCESS;
+				}
 			}
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
@@ -168,8 +201,6 @@ const int MOONG::Process::TerminateProcessNormal(IN std::vector<std::string>& pr
 
 	return EXIT_SUCCESS;
 }
-
-BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam);
 
 const int MOONG::Process::SendCloseMessageToProcessWithSamePID(IN const DWORD pid)
 {
@@ -519,4 +550,36 @@ const bool MOONG::Process::CheckDuplicateExecution()
 	}
 
 	return false;
+}
+
+const bool MOONG::Process::IsBackgroundProcess(IN const DWORD pid)
+{
+	return EnumWindows(CheckBackgroundProcess, (LPARAM)pid) == TRUE ? true : false;
+}
+
+BOOL CALLBACK CheckBackgroundProcess(HWND hwnd, LPARAM lParam)
+{
+	// 윈도우의 상태나 스타일에 따라 처리도 가능.
+	// 샘플 코드로 남겨놓음.
+	//BOOL isVisible = IsWindowVisible(hwnd);
+	//DWORD exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+	//BOOL isAppWindow = (exStyle & WS_EX_APPWINDOW);
+	//BOOL isToolWindow = (exStyle & WS_EX_TOOLWINDOW);
+	// 계산기 윈도우 떠있을때랑 최소화 되있을때랑 리턴 결과가 다름. 부모 윈도우가 있다 없다 함.
+	// 파라미터는 GW_OWNER인데 실제로는 parent 값을 얻어옴.
+	//BOOL isOwned = GetWindow(hwnd, GW_OWNER) ? TRUE : FALSE;
+	
+	DWORD process_id = 0;
+	
+	GetWindowThreadProcessId(hwnd, &process_id);
+
+	if (process_id == (DWORD)lParam)
+	{
+		if(TRUE == IsWindowVisible(hwnd))
+		{
+			return FALSE;
+		}
+	}
+	
+	return TRUE;
 }
