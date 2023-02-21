@@ -12,6 +12,11 @@
 #include <Windows.h>
 
 #if _MSC_VER <= 1200
+	// Visual Studio 6.0에서만 발생.
+	#pragma warning(disable: 4786) // identifier was truncated to '255' characters in the browser information.
+#endif
+
+#if _MSC_VER <= 1200
 	#ifndef TOKEN_MANDATORY_LABEL
 		typedef struct _TOKEN_MANDATORY_LABEL {
 			SID_AND_ATTRIBUTES Label;
