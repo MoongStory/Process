@@ -24,13 +24,13 @@
     <ClCompile Include="Test.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FileInfo\FileInfo\FileInfo.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ConvertDataType\ConvertDataType\ConvertDataType.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\StringTool\StringTool\StringTool.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FileInformation\FileInformation\FileInformation.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,13 +38,13 @@
     <ClInclude Include="Process.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\FileInfo\FileInfo\FileInfo.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ConvertDataType\ConvertDataType\ConvertDataType.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\StringTool\StringTool\StringTool.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileInformation\FileInformation\FileInformation.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

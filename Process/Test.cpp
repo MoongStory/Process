@@ -1,4 +1,4 @@
-ï»¿#include "process.h"
+#include "process.h"
 
 int main()
 {
@@ -26,11 +26,27 @@ int main()
     //system("pause");
     //MOONG::Process::TerminateProcessNormal(test);
 
-    //std::cout << "ì¤‘ë³µ ì‹¤í–‰ ì—¬ë¶€[" << MOONG::Process::CheckDuplicateExecution() << "]" << std::endl;
+    //std::cout << "Áßº¹ ½ÇÇà ¿©ºÎ[" << MOONG::Process::CheckDuplicateExecution() << "]" << std::endl;
     //system("pause");
 
-    std::cout << "msdege ì²´í¬ ë°±ê·¸ë¼ìš´ë“œ í¬í•¨[" << MOONG::Process::IsExistProcess("msedge.exe") << "]" << std::endl;
-    std::cout << "msdege ì²´í¬ ë°±ê·¸ë¼ìš´ë“œ ë¯¸í¬í•¨[" << MOONG::Process::IsExistProcess("msedge.exe", false) << "]" << std::endl;
+    //std::cout << "msdege Ã¼Å© ¹é±×¶ó¿îµå Æ÷ÇÔ[" << MOONG::Process::IsExistProcess("msedge.exe") << "]" << std::endl;
+    //std::cout << "msdege Ã¼Å© ¹é±×¶ó¿îµå ¹ÌÆ÷ÇÔ[" << MOONG::Process::IsExistProcess("msedge.exe", false) << "]" << std::endl;
+
+	//std::cout << std::endl;
+	//std::cout << std::endl;
+	//std::cout << std::endl;
+
+	HANDLE handle = MOONG::Process::GetProcessHandle("chrome.exe", false);
+	std::cout << "GetProcessHandle[" << handle << "]" << std::endl;
+	std::cout << "GetPath[" << MOONG::Process::GetPath(handle).c_str() << "]" << std::endl;
+	
+	handle = MOONG::Process::GetProcessHandle();
+	std::cout << "GetProcessHandle[" << handle << "]" << std::endl;
+	std::cout << "GetPath[" << MOONG::Process::GetPath(handle).c_str() << "]" << std::endl;
+
+	handle = MOONG::Process::GetProcessHandle("", false);
+	std::cout << "GetProcessHandle[" << handle << "]" << std::endl;
+	std::cout << "GetPath[" << MOONG::Process::GetPath(handle).c_str() << "]" << std::endl;
 
     return 0;
 }

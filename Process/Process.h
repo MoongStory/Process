@@ -33,7 +33,7 @@ SOFTWARE.
 
 #include <iostream>
 #include <vector>
-#include <Windows.h>
+#include <WTypes.h>
 
 #if _MSC_VER <= 1200
 	// Visual Studio 6.0에서만 발생.
@@ -123,6 +123,9 @@ namespace MOONG
 		static const int CreateProcessWithIntegrityLevel(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");
 
 		static const bool CheckDuplicateExecution();
+
+		static const HANDLE GetProcessHandle(const std::string process_name = "", const bool include_background_process = true);
+		static const std::string GetPath(const HANDLE param_process_handle = NULL);
 	private:
 		static const int SendCloseMessageToProcessWithSamePID(IN const DWORD pid);
 		static const bool IsBackgroundProcess(IN const DWORD pid);

@@ -9,7 +9,14 @@
 
 #include <sddl.h> // ConvertStringSidToSid 호출 시 필요.
 
-#include "../../FileInfo/FileInfo/FileInfo.h"
+#include "../../FileInformation/FileInformation/FileInformation.h"
+
+#include <psapi.h>
+
+#if _MSC_VER <= 1200
+	#pragma comment(lib, "User32.lib")
+	#pragma comment(lib, "Advapi32.lib")
+#endif
 
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_UNTRUSTED		= "S-1-16-0";
 const std::string MOONG::Process::INTEGRITY_LEVEL_SID_BELOW_LOW		= "S-1-16-2048";
@@ -541,7 +548,7 @@ const bool MOONG::Process::CheckDuplicateExecution()
 {
 	char event_name[256] = { 0 };
 	
-	StringCbPrintfA(event_name, sizeof(event_name), "%s_%s", MOONG::FileInfo::GetFolderName().c_str(), MOONG::FileInfo::GetFileNameWithoutFileExtension().c_str());
+	StringCbPrintfA(event_name, sizeof(event_name), "%s_%s", MOONG::FileInformation::GetFolderName().c_str(), MOONG::FileInformation::GetNameWithoutFileExtension().c_str());
 
 	HANDLE duplicateCheck = CreateEventA(NULL, FALSE, FALSE, event_name);
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
@@ -550,6 +557,105 @@ const bool MOONG::Process::CheckDuplicateExecution()
 	}
 
 	return false;
+}
+
+const HANDLE MOONG::Process::GetProcessHandle(const std::string process_name/* = ""*/, const bool include_background_process/* = true*/)
+{
+	if(process_name.length() <= 0)
+	{
+		return OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
+	}
+
+	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
+
+	if (hProcessSnap == INVALID_HANDLE_VALUE)
+	{
+		return INVALID_HANDLE_VALUE;
+	}
+
+	PROCESSENTRY32 pe32 = { 0 };
+
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		CloseHandle(hProcessSnap);
+
+		return INVALID_HANDLE_VALUE;
+	}
+
+	HANDLE output = NULL;
+
+	do {
+#ifdef _UNICODE
+		if (MOONG::StringTool::compare(process_name, MOONG::ConvertDataType::wstring_to_string(pe32.szExeFile), true) == 0)
+#else
+		if (MOONG::StringTool::compare(process_name, pe32.szExeFile, true) == 0)
+#endif
+		{
+			if(false == include_background_process)
+			{
+				if(true == IsBackgroundProcess(pe32.th32ProcessID))
+				{
+					continue;
+				}
+				else
+				{
+					CloseHandle(hProcessSnap);
+
+					output = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
+
+					return output == NULL ? INVALID_HANDLE_VALUE : output;
+				}
+			}
+			else
+			{
+				CloseHandle(hProcessSnap);
+
+				output = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
+
+				return output == NULL ? INVALID_HANDLE_VALUE : output;
+			}
+		}
+	} while (Process32Next(hProcessSnap, &pe32));
+
+	CloseHandle(hProcessSnap);
+
+	return INVALID_HANDLE_VALUE;
+}
+
+const std::string MOONG::Process::GetPath(const HANDLE param_process_handle/* = NULL*/)
+{
+	if(param_process_handle == INVALID_HANDLE_VALUE)
+	{
+		return "INVALID_HANDLE_VALUE";
+	}
+
+	HANDLE process_handle = NULL;
+
+	if (param_process_handle == NULL)
+	{
+		process_handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
+	}
+	else
+	{
+		process_handle = param_process_handle;
+	}
+
+	char file_path[MAX_PATH] = { 0 };
+	DWORD buffer_size = sizeof(file_path);
+
+	if (NULL != process_handle)
+	{
+		if(NULL != GetModuleFileNameExA(process_handle, NULL, file_path, buffer_size))
+		{
+			// 성공.
+		}
+
+		CloseHandle(process_handle);
+	}
+
+	return file_path;
 }
 
 const bool MOONG::Process::IsBackgroundProcess(IN const DWORD pid)
