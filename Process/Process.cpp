@@ -548,7 +548,7 @@ const bool MOONG::Process::CheckDuplicateExecution()
 {
 	char event_name[256] = { 0 };
 	
-	StringCbPrintfA(event_name, sizeof(event_name), "%s_%s", MOONG::FileInformation::GetFolderName().c_str(), MOONG::FileInformation::GetNameWithoutFileExtension().c_str());
+	StringCbPrintfA(event_name, sizeof(event_name), "%s_%s", MOONG::FileInformation::get_folder_name().c_str(), MOONG::FileInformation::get_name_without_extension().c_str());
 
 	HANDLE duplicateCheck = CreateEventA(NULL, FALSE, FALSE, event_name);
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
