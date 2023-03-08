@@ -36,17 +36,17 @@ int main()
 	//std::cout << std::endl;
 	//std::cout << std::endl;
 
-	HANDLE handle = MOONG::Process::GetProcessHandle("chrome.exe", false);
+	HANDLE handle = MOONG::Process::get_process_handle("chrome.exe", false);
 	std::cout << "GetProcessHandle[" << handle << "]" << std::endl;
-	std::cout << "GetPath[" << MOONG::Process::GetPath(handle).c_str() << "]" << std::endl;
+	std::cout << "GetPath[" << MOONG::Process::get_path(handle).c_str() << "]" << std::endl;
 	
-	handle = MOONG::Process::GetProcessHandle();
+	handle = MOONG::Process::get_process_handle();
 	std::cout << "GetProcessHandle[" << handle << "]" << std::endl;
-	std::cout << "GetPath[" << MOONG::Process::GetPath(handle).c_str() << "]" << std::endl;
+	std::cout << "GetPath[" << MOONG::Process::get_path(handle).c_str() << "]" << std::endl;
 
-	handle = MOONG::Process::GetProcessHandle("", false);
+	handle = MOONG::Process::get_process_handle("", false);
 	std::cout << "GetProcessHandle[" << handle << "]" << std::endl;
-	std::cout << "GetPath[" << MOONG::Process::GetPath(handle).c_str() << "]" << std::endl;
+	std::cout << "GetPath[" << MOONG::Process::get_path(handle).c_str() << "]" << std::endl;
 
     return 0;
 }

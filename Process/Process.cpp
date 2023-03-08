@@ -29,7 +29,7 @@ const std::string MOONG::Process::INTEGRITY_LEVEL_SID_SYSTEM		= "S-1-16-16384";
 BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam);
 BOOL CALLBACK CheckBackgroundProcess(HWND hwnd, LPARAM lParam);
 
-const int MOONG::Process::IsExistProcess(IN const std::string process_name, const bool include_background_process/* = true*/)
+const int MOONG::Process::is_exist_process(IN const std::string process_name, const bool include_background_process/* = true*/)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -58,7 +58,7 @@ const int MOONG::Process::IsExistProcess(IN const std::string process_name, cons
 		{
 			if(false == include_background_process)
 			{
-				if(true == IsBackgroundProcess(pe32.th32ProcessID))
+				if(true == is_background_process(pe32.th32ProcessID))
 				{
 					continue;
 				}
@@ -83,7 +83,7 @@ const int MOONG::Process::IsExistProcess(IN const std::string process_name, cons
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> process_name_list, const bool include_background_process/* = true*/)
+const int MOONG::Process::is_exist_process(IN const std::vector<std::string> process_name_list, const bool include_background_process/* = true*/)
 {
 	if(process_name_list.size() <= 0)
 	{
@@ -119,7 +119,7 @@ const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> proce
 			{
 				if(false == include_background_process)
 				{
-					if(true == IsBackgroundProcess(pe32.th32ProcessID))
+					if(true == is_background_process(pe32.th32ProcessID))
 					{
 						continue;
 					}
@@ -145,16 +145,16 @@ const int MOONG::Process::IsExistProcess(IN const std::vector<std::string> proce
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-const int MOONG::Process::TerminateProcessNormal(IN const std::string process_name)
+const int MOONG::Process::terminate_process_normal(IN const std::string process_name)
 {
 	std::vector<std::string> process_name_list;
 	
 	process_name_list.push_back(process_name);
 
-	return MOONG::Process::TerminateProcessNormal(process_name_list);
+	return MOONG::Process::terminate_process_normal(process_name_list);
 }
 
-const int MOONG::Process::TerminateProcessNormal(IN std::vector<std::string>& process_name_list)
+const int MOONG::Process::terminate_process_normal(IN std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -198,7 +198,7 @@ const int MOONG::Process::TerminateProcessNormal(IN std::vector<std::string>& pr
 		{
 			is_process_name_same = false;
 
-			MOONG::Process::SendCloseMessageToProcessWithSamePID(pe32.th32ProcessID);
+			MOONG::Process::send_close_message_to_process_with_same_pid(pe32.th32ProcessID);
 
 			//break; // 주석 해제할 경우 동일한 이름의 프로세스가 2개 이상 실행중일 경우 하나만 종료됨.
 		}
@@ -209,7 +209,7 @@ const int MOONG::Process::TerminateProcessNormal(IN std::vector<std::string>& pr
 	return EXIT_SUCCESS;
 }
 
-const int MOONG::Process::SendCloseMessageToProcessWithSamePID(IN const DWORD pid)
+const int MOONG::Process::send_close_message_to_process_with_same_pid(IN const DWORD pid)
 {
 	EnumWindows(FindProcessToReceiveCloseMessage, (LPARAM)pid);
 	
@@ -308,7 +308,7 @@ const int MOONG::Process::TerminateProcess(IN std::vector<std::string>& process_
 	return EXIT_SUCCESS;
 }
 
-const int MOONG::Process::TerminateProcess(IN const std::string file_name)
+const int MOONG::Process::terminate_process(IN const std::string file_name)
 {
 	std::vector<std::string> process_name_list;
 
@@ -317,7 +317,7 @@ const int MOONG::Process::TerminateProcess(IN const std::string file_name)
 	return MOONG::Process::TerminateProcess(process_name_list);
 }
 
-const bool MOONG::Process::TerminateProcess(IN HWND hwnd)
+const bool MOONG::Process::terminate_process(IN HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
@@ -345,7 +345,7 @@ const bool MOONG::Process::TerminateProcess(IN HWND hwnd)
 	return true;
 }
 
-const int MOONG::Process::CreateProcessWithIntegrityLevel(IN const int integrity_level, IN const std::string path_process, IN const std::string param/* = ""*/)
+const int MOONG::Process::create_process_with_integrity_level(IN const int integrity_level, IN const std::string path_process, IN const std::string param/* = ""*/)
 {
 	// Set integrity SID
 	std::string integrity_sid;
@@ -544,7 +544,7 @@ const int MOONG::Process::CreateProcessWithIntegrityLevel(IN const int integrity
 	return EXIT_SUCCESS;
 }
 
-const bool MOONG::Process::CheckDuplicateExecution()
+const bool MOONG::Process::check_duplicate_execution()
 {
 	char event_name[256] = { 0 };
 	
@@ -559,7 +559,7 @@ const bool MOONG::Process::CheckDuplicateExecution()
 	return false;
 }
 
-const HANDLE MOONG::Process::GetProcessHandle(const std::string process_name/* = ""*/, const bool include_background_process/* = true*/)
+const HANDLE MOONG::Process::get_process_handle(const std::string process_name/* = ""*/, const bool include_background_process/* = true*/)
 {
 	if(process_name.length() <= 0)
 	{
@@ -595,7 +595,7 @@ const HANDLE MOONG::Process::GetProcessHandle(const std::string process_name/* =
 		{
 			if(false == include_background_process)
 			{
-				if(true == IsBackgroundProcess(pe32.th32ProcessID))
+				if(true == is_background_process(pe32.th32ProcessID))
 				{
 					continue;
 				}
@@ -624,7 +624,7 @@ const HANDLE MOONG::Process::GetProcessHandle(const std::string process_name/* =
 	return INVALID_HANDLE_VALUE;
 }
 
-const std::string MOONG::Process::GetPath(const HANDLE param_process_handle/* = NULL*/)
+const std::string MOONG::Process::get_path(const HANDLE param_process_handle/* = NULL*/)
 {
 	if(param_process_handle == INVALID_HANDLE_VALUE)
 	{
@@ -658,7 +658,7 @@ const std::string MOONG::Process::GetPath(const HANDLE param_process_handle/* = 
 	return file_path;
 }
 
-const bool MOONG::Process::IsBackgroundProcess(IN const DWORD pid)
+const bool MOONG::Process::is_background_process(IN const DWORD pid)
 {
 	return EnumWindows(CheckBackgroundProcess, (LPARAM)pid) == TRUE ? true : false;
 }

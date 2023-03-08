@@ -111,24 +111,24 @@ namespace MOONG
 		*	IsExistProcess("chrome.exe");
 		*	IsExistProcess("msedge.exe", false);
 		*********************************************************************************/
-		static const int IsExistProcess(IN const std::string process_name, const bool include_background_process = true);
-		static const int IsExistProcess(IN const std::vector<std::string> process_name_list, const bool include_background_process = true);
+		static const int is_exist_process(IN const std::string process_name, const bool include_background_process = true);
+		static const int is_exist_process(IN const std::vector<std::string> process_name_list, const bool include_background_process = true);
 
-		static const int TerminateProcessNormal(IN const std::string process_name);
-		static const int TerminateProcessNormal(IN std::vector<std::string>& process_name_list);
+		static const int terminate_process_normal(IN const std::string process_name);
+		static const int terminate_process_normal(IN std::vector<std::string>& process_name_list);
 		static const int TerminateProcess(IN std::vector<std::string>& process_name_list);
-		static const int TerminateProcess(IN const std::string file_name);
-		static const bool TerminateProcess(IN HWND hwnd);
+		static const int terminate_process(IN const std::string file_name);
+		static const bool terminate_process(IN HWND hwnd);
 
-		static const int CreateProcessWithIntegrityLevel(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");
+		static const int create_process_with_integrity_level(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");
 
-		static const bool CheckDuplicateExecution();
+		static const bool check_duplicate_execution();
 
-		static const HANDLE GetProcessHandle(const std::string process_name = "", const bool include_background_process = true);
-		static const std::string GetPath(const HANDLE param_process_handle = NULL);
+		static const HANDLE get_process_handle(const std::string process_name = "", const bool include_background_process = true);
+		static const std::string get_path(const HANDLE param_process_handle = NULL);
 	private:
-		static const int SendCloseMessageToProcessWithSamePID(IN const DWORD pid);
-		static const bool IsBackgroundProcess(IN const DWORD pid);
+		static const int send_close_message_to_process_with_same_pid(IN const DWORD pid);
+		static const bool is_background_process(IN const DWORD pid);
 	};
 }
 
