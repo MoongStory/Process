@@ -114,10 +114,10 @@ namespace MOONG
 		static const int is_exist_process(IN const std::string process_name, const bool include_background_process = true);
 		static const int is_exist_process(IN const std::vector<std::string> process_name_list, const bool include_background_process = true);
 
-		static const int terminate_process_normal(IN const std::string process_name);
+		static const int terminate_process_normal(IN const std::string& process_name);
 		static const int terminate_process_normal(IN std::vector<std::string>& process_name_list);
-		static const int TerminateProcess(IN std::vector<std::string>& process_name_list);
-		static const int terminate_process(IN const std::string file_name);
+		static const int terminate_process(IN std::vector<std::string>& process_name_list);
+		static const int terminate_process(IN const std::string& file_name);
 		static const bool terminate_process(IN HWND hwnd);
 
 		static const int create_process_with_integrity_level(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");

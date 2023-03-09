@@ -145,7 +145,7 @@ const int MOONG::Process::is_exist_process(IN const std::vector<std::string> pro
 	return MOONG::PROCESS::RETURN::FAILURE::CAN_NOT_FIND_PROCESS;
 }
 
-const int MOONG::Process::terminate_process_normal(IN const std::string process_name)
+const int MOONG::Process::terminate_process_normal(IN const std::string& process_name)
 {
 	std::vector<std::string> process_name_list;
 	
@@ -245,7 +245,7 @@ BOOL CALLBACK FindProcessToReceiveCloseMessage(HWND hwnd, LPARAM lParam)
 	return TRUE;
 }
 
-const int MOONG::Process::TerminateProcess(IN std::vector<std::string>& process_name_list)
+const int MOONG::Process::terminate_process(IN std::vector<std::string>& process_name_list)
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
@@ -308,13 +308,13 @@ const int MOONG::Process::TerminateProcess(IN std::vector<std::string>& process_
 	return EXIT_SUCCESS;
 }
 
-const int MOONG::Process::terminate_process(IN const std::string file_name)
+const int MOONG::Process::terminate_process(IN const std::string& file_name)
 {
 	std::vector<std::string> process_name_list;
 
 	process_name_list.push_back(file_name);
 
-	return MOONG::Process::TerminateProcess(process_name_list);
+	return MOONG::Process::terminate_process(process_name_list);
 }
 
 const bool MOONG::Process::terminate_process(IN HWND hwnd)
