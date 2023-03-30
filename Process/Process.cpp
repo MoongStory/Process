@@ -317,16 +317,12 @@ const int MOONG::Process::terminate_process(IN const std::string& process_name)
 	return MOONG::Process::terminate_process(process_name_list);
 }
 
-const bool MOONG::Process::terminate_process(IN const HWND hwnd)
+const bool MOONG::Process::terminate_process(IN const DWORD process_id)
 {
-	if (hwnd == NULL)
+	if (process_id == 0)
 	{
 		return false;
 	}
-
-	DWORD process_id = 0;
-
-	::GetWindowThreadProcessId(hwnd, &process_id);
 
 	HANDLE handle = ::OpenProcess(MAXIMUM_ALLOWED, false, process_id);
 
