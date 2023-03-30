@@ -36,30 +36,34 @@ int main()
 	//std::cout << std::endl;
 	//std::cout << std::endl;
 
-	std::vector<HANDLE> handle = MOONG::Process::get_process_handle("Project1.exe", false);
-    for (size_t i = 0; i < handle.size(); i++)
+	std::vector<DWORD> process_id = MOONG::Process::get_process_id("Project1.exe", false);
+    for (size_t i = 0; i < process_id.size(); i++)
     {
-        std::cout << "GetProcessHandle[" << handle[i] << "]" << std::endl;
-        std::cout << "GetPath[" << MOONG::Process::get_path(handle[i]).c_str() << "]" << std::endl;
+        std::cout << "process_id[" << process_id[i] << "]" << std::endl;
+        std::cout << "get_path[" << MOONG::Process::get_path(process_id[i]).c_str() << "]" << std::endl;
     }
     
     std::cout << std::endl;
 	
-	handle = MOONG::Process::get_process_handle();
-    for (size_t i = 0; i < handle.size(); i++)
+	process_id = MOONG::Process::get_process_id();
+    for (size_t i = 0; i < process_id.size(); i++)
     {
-        std::cout << "GetProcessHandle[" << handle[i] << "]" << std::endl;
-        std::cout << "GetPath[" << MOONG::Process::get_path(handle[i]).c_str() << "]" << std::endl;
+        std::cout << "process_id[" << process_id[i] << "]" << std::endl;
+        std::cout << "get_path[" << MOONG::Process::get_path(process_id[i]).c_str() << "]" << std::endl;
     }
 
     std::cout << std::endl;
 
-	handle = MOONG::Process::get_process_handle("", false);
-    for (size_t i = 0; i < handle.size(); i++)
+	process_id = MOONG::Process::get_process_id("", false);
+    for (size_t i = 0; i < process_id.size(); i++)
     {
-        std::cout << "GetProcessHandle[" << handle[i] << "]" << std::endl;
-        std::cout << "GetPath[" << MOONG::Process::get_path(handle[i]).c_str() << "]" << std::endl;
+        std::cout << "process_id[" << process_id[i] << "]" << std::endl;
+        std::cout << "get_path[" << MOONG::Process::get_path(process_id[i]).c_str() << "]" << std::endl;
     }
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
 
     return 0;
 }

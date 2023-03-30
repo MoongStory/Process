@@ -117,15 +117,15 @@ namespace MOONG
 		static const int terminate_process_normal(IN const std::string& process_name);
 		static const int terminate_process_normal(IN std::vector<std::string>& process_name_list);
 		static const int terminate_process(IN std::vector<std::string>& process_name_list);
-		static const int terminate_process(IN const std::string& file_name);
-		static const bool terminate_process(IN HWND hwnd);
+		static const int terminate_process(IN const std::string& process_name);
+		static const bool terminate_process(IN const HWND hwnd);
 
 		static const int create_process_with_integrity_level(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");
 
 		static const bool check_duplicate_execution();
 
-		static const std::vector<HANDLE> get_process_handle(const std::string process_name = "", const bool include_background_process = true);
-		static const std::string get_path(const HANDLE param_process_handle = NULL);
+		static const std::vector<DWORD> get_process_id(IN const std::string process_name = "", IN const bool include_background_process = true);
+		static const std::string get_path(IN DWORD process_id = 0);
 	private:
 		static const int send_close_message_to_process_with_same_pid(IN const DWORD pid);
 		static const bool is_background_process(IN const DWORD pid);

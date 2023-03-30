@@ -294,7 +294,7 @@ const int MOONG::Process::terminate_process(IN std::vector<std::string>& process
 			if (hGetFromPID)
 			{
 				// FIXME: TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
-				::TerminateProcess(hGetFromPID, 0); // TerminateProcess 예외처리 생략
+				TerminateProcess(hGetFromPID, 0); // TerminateProcess 예외처리 생략
 
 				CloseHandle(hGetFromPID);
 			}
@@ -308,34 +308,34 @@ const int MOONG::Process::terminate_process(IN std::vector<std::string>& process
 	return EXIT_SUCCESS;
 }
 
-const int MOONG::Process::terminate_process(IN const std::string& file_name)
+const int MOONG::Process::terminate_process(IN const std::string& process_name)
 {
 	std::vector<std::string> process_name_list;
 
-	process_name_list.push_back(file_name);
+	process_name_list.push_back(process_name);
 
 	return MOONG::Process::terminate_process(process_name_list);
 }
 
-const bool MOONG::Process::terminate_process(IN HWND hwnd)
+const bool MOONG::Process::terminate_process(IN const HWND hwnd)
 {
 	if (hwnd == NULL)
 	{
 		return false;
 	}
 
-	DWORD dwPid = 0;
+	DWORD process_id = 0;
 
-	::GetWindowThreadProcessId(hwnd, &dwPid);
+	::GetWindowThreadProcessId(hwnd, &process_id);
 
-	HANDLE hGetFromPID = ::OpenProcess(MAXIMUM_ALLOWED, false, dwPid);
+	HANDLE handle = ::OpenProcess(MAXIMUM_ALLOWED, false, process_id);
 
-	if (hGetFromPID)
+	if (handle)
 	{
 		// FIXME: TerminatePrcess는 권장하지 않는 방법, 안전한 종료 함수로 바꿀 것
-		::TerminateProcess(hGetFromPID, 0); // TerminateProcess 예외처리 생략
+		TerminateProcess(handle, 0); // TerminateProcess 예외처리 생략
 
-		CloseHandle(hGetFromPID);
+		CloseHandle(handle);
 	}
 	else
 	{
@@ -559,14 +559,14 @@ const bool MOONG::Process::check_duplicate_execution()
 	return false;
 }
 
-const std::vector<HANDLE> MOONG::Process::get_process_handle(const std::string process_name/* = ""*/, const bool include_background_process/* = true*/)
+const std::vector<DWORD> MOONG::Process::get_process_id(IN const std::string process_name/* = ""*/, IN const bool include_background_process/* = true*/)
 {
-	std::vector<HANDLE> output;
+	std::vector<DWORD> output;
 	output.clear();
 
-	if(process_name.length() <= 0)
+	if (process_name.length() <= 0)
 	{
-		output.push_back(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId()));
+		output.push_back(GetCurrentProcessId());
 
 		return output;
 	}
@@ -596,20 +596,20 @@ const std::vector<HANDLE> MOONG::Process::get_process_handle(const std::string p
 		if (MOONG::StringTool::compare(process_name, pe32.szExeFile, true) == 0)
 #endif
 		{
-			if(false == include_background_process)
+			if (false == include_background_process)
 			{
-				if(true == is_background_process(pe32.th32ProcessID))
+				if (true == is_background_process(pe32.th32ProcessID))
 				{
 					continue;
 				}
 				else
 				{
-					output.push_back(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID));
+					output.push_back(pe32.th32ProcessID);
 				}
 			}
 			else
 			{
-				output.push_back(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID));
+				output.push_back(pe32.th32ProcessID);
 			}
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
@@ -619,30 +619,20 @@ const std::vector<HANDLE> MOONG::Process::get_process_handle(const std::string p
 	return output;
 }
 
-const std::string MOONG::Process::get_path(const HANDLE param_process_handle/* = NULL*/)
+const std::string MOONG::Process::get_path(IN DWORD process_id/* = 0*/)
 {
-	if(param_process_handle == INVALID_HANDLE_VALUE)
+	if (process_id == 0)
 	{
-		return "INVALID_HANDLE_VALUE";
-	}
-
-	HANDLE process_handle = NULL;
-
-	if (param_process_handle == NULL)
-	{
-		process_handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
-	}
-	else
-	{
-		process_handle = param_process_handle;
+		process_id = GetCurrentProcessId();
 	}
 
 	char file_path[MAX_PATH] = { 0 };
 	DWORD buffer_size = sizeof(file_path);
 
+	HANDLE process_handle = ::OpenProcess(MAXIMUM_ALLOWED, false, process_id);
 	if (NULL != process_handle)
 	{
-		if(NULL != GetModuleFileNameExA(process_handle, NULL, file_path, buffer_size))
+		if (NULL != GetModuleFileNameExA(process_handle, NULL, file_path, buffer_size))
 		{
 			// 성공.
 		}
