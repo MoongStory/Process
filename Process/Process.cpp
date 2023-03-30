@@ -559,18 +559,23 @@ const bool MOONG::Process::check_duplicate_execution()
 	return false;
 }
 
-const HANDLE MOONG::Process::get_process_handle(const std::string process_name/* = ""*/, const bool include_background_process/* = true*/)
+const std::vector<HANDLE> MOONG::Process::get_process_handle(const std::string process_name/* = ""*/, const bool include_background_process/* = true*/)
 {
+	std::vector<HANDLE> output;
+	output.clear();
+
 	if(process_name.length() <= 0)
 	{
-		return OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
+		output.push_back(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId()));
+
+		return output;
 	}
 
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		return INVALID_HANDLE_VALUE;
+		return output;
 	}
 
 	PROCESSENTRY32 pe32 = { 0 };
@@ -581,10 +586,8 @@ const HANDLE MOONG::Process::get_process_handle(const std::string process_name/*
 	{
 		CloseHandle(hProcessSnap);
 
-		return INVALID_HANDLE_VALUE;
+		return output;
 	}
-
-	HANDLE output = NULL;
 
 	do {
 #ifdef _UNICODE
@@ -601,27 +604,19 @@ const HANDLE MOONG::Process::get_process_handle(const std::string process_name/*
 				}
 				else
 				{
-					CloseHandle(hProcessSnap);
-
-					output = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
-
-					return output == NULL ? INVALID_HANDLE_VALUE : output;
+					output.push_back(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID));
 				}
 			}
 			else
 			{
-				CloseHandle(hProcessSnap);
-
-				output = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
-
-				return output == NULL ? INVALID_HANDLE_VALUE : output;
+				output.push_back(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID));
 			}
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
 
 	CloseHandle(hProcessSnap);
 
-	return INVALID_HANDLE_VALUE;
+	return output;
 }
 
 const std::string MOONG::Process::get_path(const HANDLE param_process_handle/* = NULL*/)

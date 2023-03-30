@@ -124,7 +124,7 @@ namespace MOONG
 
 		static const bool check_duplicate_execution();
 
-		static const HANDLE get_process_handle(const std::string process_name = "", const bool include_background_process = true);
+		static const std::vector<HANDLE> get_process_handle(const std::string process_name = "", const bool include_background_process = true);
 		static const std::string get_path(const HANDLE param_process_handle = NULL);
 	private:
 		static const int send_close_message_to_process_with_same_pid(IN const DWORD pid);
