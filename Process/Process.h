@@ -119,6 +119,7 @@ namespace MOONG
 		static const int terminate_process(IN std::vector<std::string>& process_name_list);
 		static const int terminate_process(IN const std::string& process_name);
 		static const bool terminate_process(IN const DWORD process_id);
+		static const bool terminate_process(IN const HWND hwnd);
 
 		static const int create_process_with_integrity_level(IN const int integrity_level, IN const std::string path_process, IN const std::string param = "");
 

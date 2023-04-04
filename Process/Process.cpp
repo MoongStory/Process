@@ -341,6 +341,20 @@ const bool MOONG::Process::terminate_process(IN const DWORD process_id)
 	return true;
 }
 
+const bool MOONG::Process::terminate_process(IN const HWND hwnd)
+{
+	if (hwnd == NULL)
+	{
+		return false;
+	}
+
+	DWORD process_id = 0;
+
+	::GetWindowThreadProcessId(hwnd, &process_id);
+
+	return terminate_process(process_id);
+}
+
 const int MOONG::Process::create_process_with_integrity_level(IN const int integrity_level, IN const std::string path_process, IN const std::string param/* = ""*/)
 {
 	// Set integrity SID
